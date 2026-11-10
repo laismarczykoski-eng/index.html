@@ -4,452 +4,399 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AquaTherm Lab | Radiação Infravermelha & Piscina Sustentável</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0e17;
-    --card: rgba(15, 23, 42, 0.7);
-    --accent: #00f5d4;
-    --accent2: #7b2cbf;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --glass: rgba(255,255,255,0.05);
-    --border: rgba(0,245,212,0.2);
+    --glass: rgba(255, 255, 255, 0.42);
+    --glass-strong: rgba(255, 255, 255, 0.62);
+    --glass-border: rgba(255, 255, 255, 0.75);
+    --accent: #00c2cb;
+    --accent-soft: #7ee8ef;
+    --accent-dark: #009aa3;
+    --text: #1a3344;
+    --text-soft: #4a6a7a;
+    --shadow: 0 25px 60px rgba(30, 90, 130, 0.14);
+    --shadow-soft: 0 10px 35px rgba(30, 90, 130, 0.09);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+- { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg);
+    background: linear-gradient(155deg, #d6e8f5 0%, #b9d6eb 35%, #9fc8e4 70%, #8ebfdc 100%);
     color: var(--text);
     line-height: 1.7;
     overflow-x: hidden;
-    transition: background 0.4s, color 0.4s;
+    min-height: 100vh;
   }
 
-  /* Aurora Background */
-  .aurora {
+  /* ====== BACKGROUND LAYERS ====== */
+  .bg-shapes {
     position: fixed;
     inset: 0;
     z-index: -2;
-    background: 
-      radial-gradient(ellipse 80% 50% at 20% -20%, rgba(0,245,212,0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(123,44,191,0.2), transparent),
-      radial-gradient(ellipse 50% 30% at 50% 100%, rgba(0,180,216,0.12), transparent);
-    animation: auroraMove 18s ease-in-out infinite alternate;
-  }
-
-  @keyframes auroraMove {
-    0% { transform: scale(1) translateY(0); }
-    100% { transform: scale(1.1) translateY(-30px); }
-  }
-
-  /* Particles */
-  .particles {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
+    overflow: hidden;
     pointer-events: none;
   }
 
-  /* High Contrast Mode */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+  }
+  .blob-1 { width: 700px; height: 700px; background: radial-gradient(circle, #7ee8ef, transparent 70%); top: -200px; left: -150px; animation: float1 24s ease-in-out infinite; }
+  .blob-2 { width: 550px; height: 550px; background: radial-gradient(circle, #a8d4f0, transparent 70%); top: 25%; right: -140px; animation: float2 30s ease-in-out infinite; }
+  .blob-3 { width: 480px; height: 480px; background: radial-gradient(circle, #c5eaf5, transparent 70%); bottom: -120px; left: 15%; animation: float3 26s ease-in-out infinite; }
+  .blob-4 { width: 350px; height: 350px; background: radial-gradient(circle, #90e0ef, transparent 70%); top: 55%; left: 40%; animation: float1 20s ease-in-out infinite reverse; opacity: 0.35; }
+
+  @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(50px,35px) scale(1.1)} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,55px) scale(1.06)} }
+  @keyframes float3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,-25px)} }
+
+  /* Soft grid overlay */
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(0,150,170,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,150,170,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent);
+    pointer-events: none;
+  }
+
+  /* Floating orbs & rings */
+  .floating-elements {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(126,232,239,0.3));
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: 0 8px 30px rgba(0,180,200,0.15), inset 0 0 20px rgba(255,255,255,0.4);
+    backdrop-filter: blur(4px);
+  }
+  .orb-1 { width: 90px; height: 90px; top: 18%; left: 8%; animation: drift1 18s ease-in-out infinite; }
+  .orb-2 { width: 55px; height: 55px; top: 65%; right: 10%; animation: drift2 22s ease-in-out infinite; }
+  .orb-3 { width: 40px; height: 40px; top: 40%; left: 5%; animation: drift3 15s ease-in-out infinite; opacity: 0.7; }
+  .orb-4 { width: 70px; height: 70px; bottom: 15%; left: 20%; animation: drift1 20s ease-in-out infinite reverse; opacity: 0.6; }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,194,203,0.25);
+    box-shadow: 0 0 20px rgba(0,194,203,0.1);
+  }
+  .ring-1 { width: 180px; height: 180px; top: 12%; right: 12%; animation: spinSlow 40s linear infinite; }
+  .ring-2 { width: 120px; height: 120px; bottom: 20%; right: 8%; animation: spinSlow 55s linear infinite reverse; border-color: rgba(126,232,239,0.3); }
+
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(25px,-20px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,30px)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(15px,15px) scale(1.15)} }
+  @keyframes spinSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* High Contrast */
   body.high-contrast {
-    --bg: #000;
-    --card: #111;
-    --accent: #ffff00;
-    --accent2: #00ffff;
-    --text: #fff;
-    --muted: #ddd;
-    --glass: #222;
-    --border: #ffff00;
+    --glass: #111; --glass-strong: #1a1a1a; --glass-border: #ffff00;
+    --accent: #ffff00; --accent-soft: #ffff88; --accent-dark: #cccc00;
+    --text: #fff; --text-soft: #ddd;
+    background: #000;
   }
+  body.high-contrast .bg-shapes,
+  body.high-contrast .grid-overlay,
+  body.high-contrast .floating-elements { display: none; }
+  body.high-contrast .glass-panel,
+  body.high-contrast .hero-glass,
+  body.high-contrast .simulator,
+  body.high-contrast .nav-container { background: #111; border-color: #ffff00; }
 
-  body.high-contrast .aurora { display: none; }
+  h1,h2,h3,.logo { font-family: 'Outfit', 'Inter', sans-serif; letter-spacing: -0.02em; }
 
-  /* Typography */
-  h1, h2, h3, .logo {
-    font-family: 'Orbitron', sans-serif;
-    letter-spacing: 1px;
+  .skip-link {
+    position: absolute; top: -100px; left: 1rem;
+    background: var(--accent); color: #fff; padding: 0.8rem 1.2rem;
+    border-radius: 12px; z-index: 999; transition: top 0.3s; font-weight: 600;
   }
+  .skip-link:focus { top: 1rem; }
 
   /* Header */
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(16px);
-    background: rgba(10,14,23,0.75);
-    border-bottom: 1px solid var(--border);
-    padding: 0.8rem 1.5rem;
-  }
+  header { position: sticky; top: 0; z-index: 100; padding: 1rem 1.5rem; }
 
   .nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    background: var(--glass); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--glass-border); border-radius: 100px;
+    padding: 0.55rem 1.1rem 0.55rem 1.4rem;
+    box-shadow: var(--shadow-soft);
   }
 
   .logo {
-    font-size: 1.3rem;
-    font-weight: 700;
-    background: linear-gradient(90deg, var(--accent), #00b4d8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    font-size: 1.15rem; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .logo-icon {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+    border-radius: 50%; display: grid; place-items: center;
+    color: white; font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(0,194,203,0.35);
   }
 
-  nav ul {
-    display: flex;
-    list-style: none;
-    gap: 1.8rem;
-  }
-
+  nav ul { display: flex; list-style: none; gap: 0.2rem; }
   nav a {
-    color: var(--muted);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.3s;
-    position: relative;
+    color: var(--text-soft); text-decoration: none; font-weight: 500; font-size: 0.88rem;
+    padding: 0.45rem 0.85rem; border-radius: 50px; transition: all 0.25s;
   }
+  nav a:hover, nav a:focus { color: var(--text); background: rgba(255,255,255,0.55); }
 
-  nav a:hover, nav a:focus {
-    color: var(--accent);
-  }
-
-  nav a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--accent);
-    transition: width 0.3s;
-  }
-
-  nav a:hover::after, nav a:focus::after {
-    width: 100%;
-  }
-
-  .controls {
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-  }
-
+  .controls { display: flex; gap: 0.35rem; align-items: center; }
   .btn-icon {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-    transition: all 0.3s;
-    font-size: 1.1rem;
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.65);
+    color: var(--text); width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center; transition: all 0.25s; font-size: 0.95rem;
   }
+  .btn-icon:hover, .btn-icon:focus { background: white; box-shadow: 0 4px 15px rgba(0,194,203,0.25); }
 
-  .btn-icon:hover, .btn-icon:focus {
-    background: rgba(0,245,212,0.15);
-    border-color: var(--accent);
-    outline: none;
-  }
-
-  /* Mobile menu */
-  .menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 1.6rem;
-    cursor: pointer;
-  }
+  .menu-toggle { display: none; background: none; border: none; color: var(--text); font-size: 1.4rem; cursor: pointer; }
 
   /* Hero */
   .hero {
-    min-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 2rem 1.5rem;
-    position: relative;
+    min-height: 92vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    padding: 2.5rem 1.5rem 4rem; position: relative;
   }
 
+  .hero-glass {
+    background: var(--glass); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+    border: 1px solid var(--glass-border); border-radius: 36px;
+    padding: 3.8rem 2.8rem; max-width: 860px; width: 100%;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+
+  .hero-glass::before {
+    content: ''; position: absolute; top: -40%; left: -25%; width: 90%; height: 110%;
+    background: linear-gradient(125deg, rgba(126,232,239,0.3), transparent 60%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .hero-glass::after {
+    content: ''; position: absolute; bottom: -30%; right: -15%; width: 50%; height: 70%;
+    background: linear-gradient(200deg, rgba(0,194,203,0.12), transparent);
+    border-radius: 50%; pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(0,194,203,0.12); border: 1px solid rgba(0,194,203,0.3);
+    color: var(--accent-dark); font-size: 0.8rem; font-weight: 600;
+    padding: 0.35rem 0.9rem; border-radius: 50px; margin-bottom: 1.3rem;
+  }
+  .badge-dot {
+    width: 7px; height: 7px; background: var(--accent); border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent); animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:0.6; transform:scale(0.85)} }
+
   .hero h1 {
-    font-size: clamp(2.2rem, 6vw, 3.8rem);
-    line-height: 1.15;
-    margin-bottom: 1.2rem;
-    background: linear-gradient(120deg, #fff 30%, var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: clamp(2.5rem, 5.8vw, 3.7rem); line-height: 1.1;
+    margin-bottom: 1.1rem; color: var(--text); font-weight: 700; position: relative;
+  }
+  .hero h1 span {
+    background: linear-gradient(120deg, var(--accent-dark), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
 
   .hero p {
-    max-width: 700px;
-    font-size: 1.2rem;
-    color: var(--muted);
-    margin-bottom: 2.5rem;
+    max-width: 540px; margin: 0 auto 2.3rem; font-size: 1.1rem;
+    color: var(--text-soft); font-weight: 400; position: relative;
   }
 
-  .cta {
-    display: inline-flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+  .cta { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; position: relative; }
 
   .btn {
-    padding: 0.9rem 1.8rem;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    transition: all 0.3s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    padding: 0.9rem 1.8rem; border-radius: 50px; font-weight: 600; font-size: 0.95rem;
+    cursor: pointer; border: none; transition: all 0.3s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.45rem;
   }
-
   .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #00b4d8);
-    color: #0a0e17;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white; box-shadow: 0 10px 28px rgba(0,194,203,0.4);
   }
-
-  .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,245,212,0.3);
-  }
-
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 35px rgba(0,194,203,0.5); }
   .btn-secondary {
-    background: transparent;
-    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.85);
     color: var(--text);
   }
+  .btn-secondary:hover { background: white; }
 
-  .btn-secondary:hover {
-    border-color: var(--accent);
-    background: rgba(0,245,212,0.08);
+  /* Mini stats under hero */
+  .hero-stats {
+    display: flex; gap: 1.2rem; margin-top: 2.5rem; flex-wrap: wrap; justify-content: center;
   }
+  .stat-pill {
+    background: var(--glass); backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border); border-radius: 18px;
+    padding: 0.9rem 1.4rem; display: flex; align-items: center; gap: 0.7rem;
+    box-shadow: var(--shadow-soft); min-width: 140px;
+  }
+  .stat-icon {
+    width: 36px; height: 36px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(0,194,203,0.2), rgba(126,232,239,0.3));
+    display: grid; place-items: center; font-size: 1.1rem;
+  }
+  .stat-value { font-family: 'Outfit'; font-weight: 700; font-size: 1.15rem; color: var(--accent-dark); }
+  .stat-label { font-size: 0.78rem; color: var(--text-soft); }
 
   /* Sections */
-  section {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 5rem 1.5rem;
-  }
+  section { max-width: 1040px; margin: 0 auto; padding: 4.5rem 1.5rem; position: relative; }
 
   .section-title {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
+    font-size: 1.9rem; margin-bottom: 0.4rem; color: var(--text); font-weight: 700;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .section-title span { color: var(--accent); font-weight: 600; }
+  .section-subtitle { color: var(--text-soft); margin-bottom: 2.3rem; font-size: 1.05rem; }
+
+  .glass-panel {
+    background: var(--glass); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1px solid var(--glass-border); border-radius: 26px;
+    padding: 1.9rem; margin-bottom: 1.4rem;
+    box-shadow: var(--shadow-soft); transition: transform 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .glass-panel:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .glass-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
   }
 
-  .section-title span {
-    color: var(--accent);
-  }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.3rem; }
 
-  .section-subtitle {
-    color: var(--muted);
-    margin-bottom: 2.5rem;
-    font-size: 1.1rem;
-  }
-
-  /* Cards */
-  .card {
-    background: var(--card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 1.8rem;
-    margin-bottom: 1.5rem;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-  }
-
-  .grid-2 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+  /* Feature icons */
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: linear-gradient(145deg, rgba(0,194,203,0.15), rgba(126,232,239,0.25));
+    border: 1px solid rgba(0,194,203,0.2);
+    display: grid; place-items: center; font-size: 1.3rem; margin-bottom: 0.9rem;
   }
 
   /* Simulator */
   .simulator {
-    background: linear-gradient(145deg, rgba(15,23,42,0.9), rgba(10,14,23,0.95));
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 2rem;
-    margin: 2rem 0;
+    background: var(--glass-strong); backdrop-filter: blur(26px);
+    border: 1px solid var(--glass-border); border-radius: 30px;
+    padding: 2.2rem; margin: 1.9rem 0; box-shadow: var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  .simulator::before {
+    content: ''; position: absolute; top: -20%; right: -10%; width: 40%; height: 60%;
+    background: radial-gradient(circle, rgba(126,232,239,0.2), transparent 70%);
+    pointer-events: none;
   }
 
-  .sim-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin: 1.5rem 0;
-    align-items: center;
-  }
-
-  .slider-group {
-    flex: 1;
-    min-width: 220px;
-  }
-
+  .sim-controls { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1.5rem 0; align-items: center; }
+  .slider-group { flex: 1; min-width: 200px; }
   .slider-group label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-weight: 500;
-    color: var(--accent);
+    display: block; margin-bottom: 0.35rem; font-weight: 600; font-size: 0.9rem; color: var(--accent-dark);
   }
-
-  input[type="range"] {
-    width: 100%;
-    accent-color: var(--accent);
-    height: 6px;
-  }
-
+  input[type="range"] { width: 100%; accent-color: var(--accent); height: 6px; border-radius: 10px; }
   .value-display {
-    font-family: 'Orbitron';
-    font-size: 1.4rem;
-    color: var(--accent);
-    margin-top: 0.3rem;
+    font-family: 'Outfit'; font-size: 1.4rem; font-weight: 600; color: var(--accent-dark); margin-top: 0.25rem;
   }
 
   .canvas-container {
-    background: #020617;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    margin-top: 1rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(200,230,245,0.4));
+    border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.75); margin-top: 1rem;
   }
+  canvas { width: 100%; display: block; }
 
-  canvas {
-    width: 100%;
-    display: block;
-  }
-
-  /* Comparison visual */
-  .comparison {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin: 2rem 0;
-  }
-
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; margin: 1.9rem 0; }
   .comp-box {
-    text-align: center;
-    padding: 1.5rem;
-    border-radius: 16px;
-    border: 1px solid var(--border);
+    text-align: center; padding: 1.5rem; border-radius: 22px;
+    border: 1px solid var(--glass-border); background: rgba(255,255,255,0.4);
+  }
+  .comp-box.sem { background: rgba(255, 180, 180, 0.22); }
+  .comp-box.com { background: rgba(126, 232, 239, 0.28); }
+  .heat-bar { height: 10px; border-radius: 20px; margin: 1rem 0; transition: width 0.8s ease; }
+
+  /* Tech chips */
+  .tech-row {
+    display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem;
+  }
+  .tech-chip {
+    background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 50px; padding: 0.35rem 0.9rem; font-size: 0.8rem;
+    font-weight: 500; color: var(--text-soft);
   }
 
-  .comp-box.sem { background: rgba(239,68,68,0.1); }
-  .comp-box.com { background: rgba(0,245,212,0.1); }
-
-  .heat-bar {
-    height: 12px;
-    border-radius: 20px;
-    margin: 1rem 0;
-    transition: width 0.8s ease;
-  }
-
-  /* Libras placeholder */
+  /* Libras */
   .libras-box {
-    background: rgba(123,44,191,0.15);
-    border: 1px dashed var(--accent2);
-    border-radius: 16px;
-    padding: 2rem;
-    text-align: center;
-    margin: 2rem 0;
+    background: rgba(126, 232, 239, 0.18); border: 1.5px dashed var(--accent);
+    border-radius: 22px; padding: 2.2rem; text-align: center; margin: 1.9rem 0;
+    position: relative;
   }
 
-  /* Footer */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 3rem 1.5rem;
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.95rem;
+  /* Decorative line */
+  .deco-line {
+    width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 3px; margin-bottom: 1.2rem;
   }
 
-  /* Accessibility skip */
-  .skip-link {
-    position: absolute;
-    top: -100px;
-    left: 1rem;
-    background: var(--accent);
-    color: #000;
-    padding: 0.8rem 1.2rem;
-    border-radius: 8px;
-    z-index: 999;
-    transition: top 0.3s;
-  }
+  footer { padding: 3.5rem 1.5rem; text-align: center; color: var(--text-soft); font-size: 0.9rem; }
+  footer .glass-panel { max-width: 620px; margin: 0 auto; padding: 1.6rem; }
 
-  .skip-link:focus {
-    top: 1rem;
-  }
-
-  /* Responsive */
   @media (max-width: 768px) {
+    .nav-container { border-radius: 20px; padding: 0.7rem 1rem; }
     nav ul {
-      display: none;
-      position: absolute;
-      top: 70px;
-      left: 0;
-      right: 0;
-      background: rgba(10,14,23,0.95);
-      flex-direction: column;
-      padding: 1.5rem;
-      gap: 1rem;
-      border-bottom: 1px solid var(--border);
+      display: none; position: absolute; top: 70px; left: 1rem; right: 1rem;
+      background: var(--glass-strong); backdrop-filter: blur(24px);
+      flex-direction: column; padding: 1.2rem; gap: 0.3rem;
+      border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: var(--shadow);
     }
-
     nav ul.open { display: flex; }
-
     .menu-toggle { display: block; }
-
     .comparison { grid-template-columns: 1fr; }
+    .hero-glass { padding: 2.6rem 1.5rem; }
+    .orb-1, .orb-2, .ring-1 { display: none; }
   }
 
-  /* Focus visible */
-  :focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 3px;
-  }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 </style>
 </head>
 <body>
   <a href="#conteudo" class="skip-link">Pular para o conteúdo principal</a>
 
-  <div class="aurora"></div>
-  <canvas class="particles" id="particles"></canvas>
+  <div class="bg-shapes">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <div class="floating-elements">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+  </div>
 
   <header>
     <div class="nav-container">
       <div class="logo">
-        <span>◈</span> AquaTherm Lab
+        <div class="logo-icon">◈</div>
+        AquaTherm
       </div>
-
       <button class="menu-toggle" aria-label="Abrir menu" id="menuBtn">☰</button>
-
       <nav>
         <ul id="navMenu">
           <li><a href="#inicio">Início</a></li>
@@ -457,10 +404,8 @@
           <li><a href="#simuladores">Simuladores</a></li>
           <li><a href="#cobertura">Cobertura</a></li>
           <li><a href="#projeto">Projeto</a></li>
-          <li><a href="#mapa">Mapa</a></li>
         </ul>
       </nav>
-
       <div class="controls">
         <button class="btn-icon" id="contrastBtn" aria-label="Ativar alto contraste" title="Alto Contraste">◐</button>
         <button class="btn-icon" id="fontPlus" aria-label="Aumentar fonte">A+</button>
@@ -470,72 +415,105 @@
   </header>
 
   <main id="conteudo">
-    <!-- HERO -->
     <section class="hero" id="inicio">
-      <h1>Radiação Infravermelha<br>& Perda de Energia da Piscina</h1>
-      <p>
-        Laboratório educacional interativo que une Física, Programação, Tecnologia e Robótica 
-        para entender como a água perde calor mesmo em noites sem vento — e como a automação sustentável resolve isso.
-      </p>
-      <div class="cta">
-        <a href="#ciencia" class="btn btn-primary">Explorar a Ciência</a>
-        <a href="#simuladores" class="btn btn-secondary">Abrir Simuladores</a>
+      <div class="hero-glass">
+        <div class="badge"><span class="badge-dot"></span> Lab Educacional STEM</div>
+        <h1>Radiação Infravermelha<br><span>& Perda de Energia</span></h1>
+        <p>
+          Laboratório interativo que une Física, Programação e Robótica para entender
+          como a água perde calor — e como a automação sustentável resolve isso.
+        </p>
+        <div class="cta">
+          <a href="#ciencia" class="btn btn-primary">Explorar a Ciência</a>
+          <a href="#simuladores" class="btn btn-secondary">Abrir Simuladores</a>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <div class="stat-icon">📡</div>
+          <div>
+            <div class="stat-value">IR</div>
+            <div class="stat-label">Radiação térmica</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon">🌡️</div>
+          <div>
+            <div class="stat-value">T⁴</div>
+            <div class="stat-label">Stefan-Boltzmann</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon">🤖</div>
+          <div>
+            <div class="stat-value">IoT</div>
+            <div class="stat-label">Automação</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon">💧</div>
+          <div>
+            <div class="stat-value">−70%</div>
+            <div class="stat-label">Perda de calor</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- CIÊNCIA -->
     <section id="ciencia">
-      <h2 class="section-title"><span>01.</span> A Ciência da Radiação Térmica</h2>
+      <div class="deco-line"></div>
+      <h2 class="section-title"><span>01 ·</span> A Ciência da Radiação Térmica</h2>
       <p class="section-subtitle">Emissão e absorção de radiação infravermelha no contexto de uma piscina</p>
 
-      <div class="card">
-        <h3>Por que objetos aquecidos emitem radiação infravermelha?</h3>
+      <div class="glass-panel">
+        <div class="feature-icon">☀️</div>
+        <h3 style="margin-bottom:0.8rem; font-size:1.2rem;">Por que objetos aquecidos emitem radiação infravermelha?</h3>
         <p>
-          Todo corpo com temperatura acima do zero absoluto emite radiação eletromagnética. 
-          A água da piscina (normalmente entre 25 °C e 32 °C) emite principalmente na faixa do 
-          <strong>infravermelho térmico</strong> (comprimento de onda entre 8 e 14 μm). 
-          Essa emissão ocorre porque as moléculas vibram e aceleram cargas elétricas, gerando ondas eletromagnéticas.
+          Todo corpo com temperatura acima do zero absoluto emite radiação eletromagnética.
+          A água da piscina (25–32 °C) emite principalmente na faixa do
+          <strong>infravermelho térmico</strong> (8–14 μm). As moléculas vibram e aceleram
+          cargas elétricas, gerando ondas eletromagnéticas.
         </p>
-        <p>
-          A lei de Stefan-Boltzmann descreve a potência total emitida:
-        </p>
-        <p style="font-family:Orbitron; font-size:1.3rem; color:var(--accent); text-align:center; margin:1.5rem 0;">
+        <p style="margin-top:1rem;">A lei de Stefan-Boltzmann descreve a potência total emitida:</p>
+        <p style="font-family:'Outfit'; font-size:1.5rem; color:var(--accent-dark); text-align:center; margin:1.5rem 0; font-weight:600;">
           P = ε · σ · A · T⁴
         </p>
         <p>
-          onde ε é a emissividade (≈ 0,95 para água), σ a constante de Stefan-Boltzmann e T a temperatura absoluta em Kelvin.
+          onde ε ≈ 0,95 (água), σ é a constante de Stefan-Boltzmann e T a temperatura absoluta em Kelvin.
         </p>
       </div>
 
       <div class="grid-2">
-        <div class="card">
-          <h3>Como a temperatura influencia a emissão?</h3>
+        <div class="glass-panel">
+          <div class="feature-icon">📈</div>
+          <h3 style="margin-bottom:0.7rem; font-size:1.15rem;">Como a temperatura influencia?</h3>
           <p>
-            A emissão cresce com a <strong>quarta potência</strong> da temperatura. 
-            Uma piscina a 30 °C (303 K) emite cerca de 15% mais energia por radiação do que a mesma piscina a 25 °C (298 K). 
-            Pequenas diferenças de temperatura geram diferenças significativas de perda de calor.
+            A emissão cresce com a <strong>quarta potência</strong> da temperatura.
+            Uma piscina a 30 °C emite ~15% mais energia por radiação do que a 25 °C.
+            Pequenas diferenças geram perdas significativas.
           </p>
         </div>
-        <div class="card">
-          <h3>Por que a piscina perde calor mesmo com ar parado?</h3>
+        <div class="glass-panel">
+          <div class="feature-icon">🌌</div>
+          <h3 style="margin-bottom:0.7rem; font-size:1.15rem;">Por que perde calor com ar parado?</h3>
           <p>
-            Mesmo sem vento (convecção nula) e sem evaporação, a água continua irradiando energia térmica 
-            para o céu e para o ambiente. O céu noturno atua como um corpo frio (às vezes −40 °C efetivos), 
-            criando um grande gradiente radiativo. É por isso que a piscina esfria bastante nas madrugadas claras.
+            Mesmo sem vento ou evaporação, a água irradia energia para o céu.
+            O céu noturno atua como corpo frio (até −40 °C efetivos), criando grande
+            gradiente radiativo — por isso a piscina esfria nas madrugadas claras.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- SIMULADORES -->
     <section id="simuladores">
-      <h2 class="section-title"><span>02.</span> Simuladores Interativos</h2>
+      <div class="deco-line"></div>
+      <h2 class="section-title"><span>02 ·</span> Simuladores Interativos</h2>
       <p class="section-subtitle">Experimente a física em tempo real</p>
 
-      <!-- Simulador 1 -->
       <div class="simulator">
-        <h3>Simulador 1 — Emissão de Radiação × Temperatura</h3>
-        <p>Ajuste a temperatura da água e observe como a potência radiativa muda (Lei de Stefan-Boltzmann).</p>
+        <h3 style="margin-bottom:0.5rem;">Simulador 1 — Emissão de Radiação × Temperatura</h3>
+        <p style="color:var(--text-soft); font-size:0.95rem;">Ajuste a temperatura e observe a potência radiativa (Lei de Stefan-Boltzmann).</p>
 
         <div class="sim-controls">
           <div class="slider-group">
@@ -548,16 +526,14 @@
             <div class="value-display" id="powerValue">— W/m²</div>
           </div>
         </div>
-
         <div class="canvas-container">
-          <canvas id="emissionCanvas" height="220"></canvas>
+          <canvas id="emissionCanvas" height="200"></canvas>
         </div>
       </div>
 
-      <!-- Simulador 2 -->
       <div class="simulator">
-        <h3>Simulador 2 — Efeito da Cobertura Térmica</h3>
-        <p>Compare a perda de energia com e sem cobertura inteligente.</p>
+        <h3 style="margin-bottom:0.5rem;">Simulador 2 — Efeito da Cobertura Térmica</h3>
+        <p style="color:var(--text-soft); font-size:0.95rem;">Compare a perda de energia com e sem cobertura inteligente.</p>
 
         <div class="sim-controls">
           <div class="slider-group">
@@ -570,26 +546,27 @@
         <div class="comparison">
           <div class="comp-box sem">
             <h4>Sem cobertura</h4>
-            <div class="heat-bar" id="barSem" style="width:100%; background:linear-gradient(90deg,#ef4444,#f97316);"></div>
+            <div class="heat-bar" id="barSem" style="width:100%; background:linear-gradient(90deg,#f87171,#fb923c);"></div>
             <p id="lossSem">Perda: 100%</p>
           </div>
           <div class="comp-box com">
             <h4>Com cobertura</h4>
-            <div class="heat-bar" id="barCom" style="width:30%; background:linear-gradient(90deg,#00f5d4,#00b4d8);"></div>
+            <div class="heat-bar" id="barCom" style="width:30%; background:linear-gradient(90deg,#00c2cb,#7ee8ef);"></div>
             <p id="lossCom">Perda residual: 30%</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- COBERTURA -->
     <section id="cobertura">
-      <h2 class="section-title"><span>03.</span> Como a Cobertura Reduz as Perdas</h2>
+      <div class="deco-line"></div>
+      <h2 class="section-title"><span>03 ·</span> Como a Cobertura Reduz as Perdas</h2>
       <p class="section-subtitle">Solução sustentável + automação</p>
 
-      <div class="card">
-        <h3>Por que a cobertura funciona?</h3>
-        <ul style="padding-left:1.4rem; margin-top:1rem;">
+      <div class="glass-panel">
+        <div class="feature-icon">🛡️</div>
+        <h3 style="margin-bottom:0.8rem; font-size:1.15rem;">Por que a cobertura funciona?</h3>
+        <ul style="padding-left:1.3rem; margin-top:0.6rem;">
           <li>Bloqueia a emissão direta de radiação infravermelha da água para o céu</li>
           <li>Reduz drasticamente a evaporação (maior fonte de perda em climas secos)</li>
           <li>Diminui a convecção forçada quando há vento</li>
@@ -598,134 +575,95 @@
       </div>
 
       <div class="grid-2">
-        <div class="card">
-          <h3>Integração com Robótica & IoT</h3>
+        <div class="glass-panel">
+          <div class="feature-icon">⚙️</div>
+          <h3 style="margin-bottom:0.7rem; font-size:1.1rem;">Robótica & IoT</h3>
           <p>
-            Sensores de temperatura da água + temperatura do ar + umidade + radiação solar. 
-            Um microcontrolador (ESP32 / Arduino) decide quando abrir ou fechar a cobertura 
-            e aciona motores ou atuadores. Dados podem ser enviados para um dashboard em tempo real.
+            Sensores de temperatura da água + ar + umidade + radiação solar.
+            Um microcontrolador (ESP32 / Arduino) decide quando abrir ou fechar
+            a cobertura e aciona motores. Dados em dashboard em tempo real.
           </p>
+          <div class="tech-row">
+            <span class="tech-chip">ESP32</span>
+            <span class="tech-chip">Sensores DHT</span>
+            <span class="tech-chip">MQTT</span>
+            <span class="tech-chip">Dashboard</span>
+          </div>
         </div>
-        <div class="card">
-          <h3>Impacto Social & Sustentabilidade</h3>
+        <div class="glass-panel">
+          <div class="feature-icon">🌱</div>
+          <h3 style="margin-bottom:0.7rem; font-size:1.1rem;">Impacto Social</h3>
           <p>
-            Redução de até 70% no consumo de energia para aquecimento. 
-            Menor uso de bombas de calor e aquecedores a gás. 
-            Inclusão digital: alunos aprendem física + programação + sustentabilidade ao mesmo tempo.
+            Redução de até 70% no consumo de energia para aquecimento.
+            Menor uso de bombas de calor e gás. Inclusão digital: alunos
+            aprendem física + programação + sustentabilidade juntos.
           </p>
+          <div class="tech-row">
+            <span class="tech-chip">−70% energia</span>
+            <span class="tech-chip">STEM</span>
+            <span class="tech-chip">Acessível</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- PROJETO -->
     <section id="projeto">
-      <h2 class="section-title"><span>04.</span> Projeto AquaTherm</h2>
+      <div class="deco-line"></div>
+      <h2 class="section-title"><span>04 ·</span> Projeto AquaTherm</h2>
       <p class="section-subtitle">Conexão real com aquecimento sustentável de piscina</p>
 
-      <div class="card">
-        <p>
-          Este site faz parte de um projeto maior de educação STEM que integra:
-        </p>
-        <ul style="padding-left:1.4rem; margin:1rem 0;">
+      <div class="glass-panel">
+        <div class="feature-icon">🔬</div>
+        <p>Este site faz parte de um projeto maior de educação STEM que integra:</p>
+        <ul style="padding-left:1.3rem; margin:1rem 0;">
           <li><strong>Física</strong> — radiação, convecção, evaporação</li>
-          <li><strong>Programação</strong> — algoritmos de controle e visualização de dados</li>
-          <li><strong>Robótica / IoT</strong> — sensores, atuadores e automação da cobertura</li>
-          <li><strong>Sustentabilidade</strong> — redução de consumo energético e conscientização</li>
+          <li><strong>Programação</strong> — algoritmos de controle e visualização</li>
+          <li><strong>Robótica / IoT</strong> — sensores, atuadores e automação</li>
+          <li><strong>Sustentabilidade</strong> — redução energética e conscientização</li>
         </ul>
         <p>
-          Os alunos podem replicar o simulador, construir protótipos de cobertura automática 
+          Os alunos podem replicar o simulador, construir protótipos de cobertura automática
           e medir a temperatura real de uma piscina escolar ou comunitária.
         </p>
       </div>
 
-      <!-- Libras -->
       <div class="libras-box">
-        <h3>Vídeos em Libras</h3>
-        <p>Espaço reservado para vídeos explicativos em Língua Brasileira de Sinais.</p>
-        <p style="margin-top:0.8rem; font-size:0.95rem; color:var(--muted);">
-          Substitua este bloco por iframes do YouTube ou arquivos de vídeo com interpretação em Libras 
-          dos principais conceitos (radiação, lei de Stefan-Boltzmann e funcionamento da cobertura).
+        <div class="feature-icon" style="margin:0 auto 0.8rem;">🤟</div>
+        <h3 style="margin-bottom:0.8rem;">Vídeos em Libras</h3>
+        <p style="margin-bottom:1.2rem; color:var(--text-soft); font-size:0.95rem;">
+          Conteúdo em Língua Brasileira de Sinais para acessibilidade.
         </p>
-      </div>
-    </section>
-
-    <!-- MAPA -->
-    <section id="mapa">
-      <h2 class="section-title"><span>05.</span> Mapa do Site</h2>
-      <div class="card">
-        <ul style="list-style:none; display:grid; gap:0.6rem;">
-          <li><a href="#inicio" style="color:var(--accent);">→ Início / Hero</a></li>
-          <li><a href="#ciencia" style="color:var(--accent);">→ Ciência da Radiação Térmica</a></li>
-          <li><a href="#simuladores" style="color:var(--accent);">→ Simuladores Interativos</a></li>
-          <li><a href="#cobertura" style="color:var(--accent);">→ Como a Cobertura Funciona</a></li>
-          <li><a href="#projeto" style="color:var(--accent);">→ Projeto AquaTherm & Inclusão</a></li>
-        </ul>
+        <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:16px; border:1px solid rgba(255,255,255,0.6); box-shadow:0 10px 30px rgba(0,100,120,0.12);">
+          <iframe
+            src="https://www.youtube.com/embed/Tal_Bh9TmC4"
+            title="Vídeo em Libras - AquaTherm Lab"
+            style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>AquaTherm Lab — Educação STEM Acessível · Radiação Infravermelha & Piscina Sustentável</p>
-    <p style="margin-top:0.5rem; font-size:0.85rem;">100% navegável por teclado · Modo alto contraste · Preparado para Libras</p>
+    <div class="glass-panel">
+      <p style="font-weight:600; color:var(--text); margin-bottom:0.3rem;">AquaTherm Lab</p>
+      <p>Educação STEM Acessível · Radiação Infravermelha & Piscina Sustentável</p>
+      <p style="margin-top:0.6rem; font-size:0.85rem;">100% navegável por teclado · Alto contraste · Preparado para Libras</p>
+    </div>
   </footer>
 
 <script>
-  // Particles
-  const canvasP = document.getElementById('particles');
-  const ctxP = canvasP.getContext('2d');
-  let particles = [];
-
-  function resizeParticles() {
-    canvasP.width = window.innerWidth;
-    canvasP.height = window.innerHeight;
-  }
-  resizeParticles();
-  window.addEventListener('resize', resizeParticles);
-
-  class Particle {
-    constructor() {
-      this.x = Math.random() * canvasP.width;
-      this.y = Math.random() * canvasP.height;
-      this.size = Math.random() * 1.8 + 0.5;
-      this.speedX = Math.random() * 0.4 - 0.2;
-      this.speedY = Math.random() * 0.4 - 0.2;
-      this.opacity = Math.random() * 0.5 + 0.1;
-    }
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-      if (this.x < 0 || this.x > canvasP.width) this.speedX *= -1;
-      if (this.y < 0 || this.y > canvasP.height) this.speedY *= -1;
-    }
-    draw() {
-      ctxP.beginPath();
-      ctxP.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctxP.fillStyle = `rgba(0,245,212,${this.opacity})`;
-      ctxP.fill();
-    }
-  }
-
-  for (let i = 0; i < 60; i++) particles.push(new Particle());
-
-  function animateParticles() {
-    ctxP.clearRect(0, 0, canvasP.width, canvasP.height);
-    particles.forEach(p => { p.update(); p.draw(); });
-    requestAnimationFrame(animateParticles);
-  }
-  animateParticles();
-
-  // Menu mobile
   const menuBtn = document.getElementById('menuBtn');
   const navMenu = document.getElementById('navMenu');
-  menuBtn.addEventListener('click', () => {
-    navMenu.classList.toggle('open');
-  });
+  menuBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
 
-  // Accessibility controls
   const contrastBtn = document.getElementById('contrastBtn');
   contrastBtn.addEventListener('click', () => {
     document.body.classList.toggle('high-contrast');
-    contrastBtn.setAttribute('aria-label', 
+    contrastBtn.setAttribute('aria-label',
       document.body.classList.contains('high-contrast') ? 'Desativar alto contraste' : 'Ativar alto contraste');
   });
 
@@ -739,7 +677,6 @@
     document.documentElement.style.fontSize = fontSize + 'px';
   });
 
-  // Simulator 1 - Emission
   const tempSlider = document.getElementById('tempSlider');
   const tempValue = document.getElementById('tempValue');
   const powerValue = document.getElementById('powerValue');
@@ -755,63 +692,44 @@
   function updateEmission() {
     const tC = parseFloat(tempSlider.value);
     const tK = tC + 273.15;
-    const sigma = 5.67e-8;
-    const eps = 0.95;
-    const power = eps * sigma * Math.pow(tK, 4);
-
+    const power = 0.95 * 5.67e-8 * Math.pow(tK, 4);
     tempValue.textContent = tC.toFixed(1) + ' °C';
     powerValue.textContent = power.toFixed(1) + ' W/m²';
 
-    // Draw simple bar + glow
-    const w = emissionCanvas.width;
-    const h = emissionCanvas.height;
+    const w = emissionCanvas.width, h = emissionCanvas.height;
     ctxE.clearRect(0, 0, w, h);
+    const barWidth = Math.max(20, (power / 550) * (w - 80));
 
-    const maxPower = 550; // approx at 40°C
-    const barWidth = (power / maxPower) * (w - 80);
-
-    // Background grid
-    ctxE.strokeStyle = 'rgba(0,245,212,0.08)';
+    ctxE.strokeStyle = 'rgba(0,150,160,0.12)';
     ctxE.lineWidth = 1;
     for (let i = 0; i < 5; i++) {
-      const y = 40 + i * 35;
-      ctxE.beginPath();
-      ctxE.moveTo(40, y);
-      ctxE.lineTo(w - 20, y);
-      ctxE.stroke();
+      const y = 35 + i * 32;
+      ctxE.beginPath(); ctxE.moveTo(40, y); ctxE.lineTo(w - 20, y); ctxE.stroke();
     }
 
-    // Bar
     const gradient = ctxE.createLinearGradient(40, 0, 40 + barWidth, 0);
-    gradient.addColorStop(0, '#00f5d4');
-    gradient.addColorStop(1, '#7b2cbf');
+    gradient.addColorStop(0, '#00c2cb');
+    gradient.addColorStop(1, '#7ee8ef');
     ctxE.fillStyle = gradient;
     ctxE.beginPath();
-    ctxE.roundRect(40, h/2 - 18, barWidth, 36, 10);
+    ctxE.roundRect(40, h/2 - 16, barWidth, 32, 12);
     ctxE.fill();
-
-    // Glow
-    ctxE.shadowColor = '#00f5d4';
-    ctxE.shadowBlur = 20;
+    ctxE.shadowColor = 'rgba(0,194,203,0.4)';
+    ctxE.shadowBlur = 18;
     ctxE.fill();
     ctxE.shadowBlur = 0;
 
-    // Labels
-    ctxE.fillStyle = '#94a3b8';
-    ctxE.font = '13px Inter';
-    ctxE.fillText('0', 40, h - 15);
-    ctxE.fillText('~550 W/m²', w - 90, h - 15);
+    ctxE.fillStyle = '#4a6a7a';
+    ctxE.font = '12px Inter';
+    ctxE.fillText('0', 40, h - 12);
+    ctxE.fillText('~550 W/m²', w - 85, h - 12);
   }
-
   tempSlider.addEventListener('input', updateEmission);
   updateEmission();
 
-  // Simulator 2 - Cover
   const coverSlider = document.getElementById('coverSlider');
   const coverValue = document.getElementById('coverValue');
-  const barSem = document.getElementById('barSem');
   const barCom = document.getElementById('barCom');
-  const lossSem = document.getElementById('lossSem');
   const lossCom = document.getElementById('lossCom');
 
   function updateCover() {
@@ -821,11 +739,9 @@
     barCom.style.width = residual + '%';
     lossCom.textContent = `Perda residual: ${residual}%`;
   }
-
   coverSlider.addEventListener('input', updateCover);
   updateCover();
 
-  // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       e.preventDefault();
