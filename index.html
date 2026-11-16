@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AquaTherm Lab | Radiação Infravermelha & Piscina Sustentável</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --glass: rgba(255, 255, 255, 0.42);
@@ -54,6 +54,7 @@
   @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,55px) scale(1.06)} }
   @keyframes float3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,-25px)} }
 
+  /* Soft grid overlay */
   .grid-overlay {
     position: fixed;
     inset: 0;
@@ -66,6 +67,7 @@
     pointer-events: none;
   }
 
+  /* Floating orbs & rings */
   .floating-elements {
     position: fixed;
     inset: 0;
@@ -315,101 +317,6 @@
   }
   canvas { width: 100%; display: block; }
 
-  /* 3D Simulator Specific Styles */
-  .sim3d-wrapper {
-    position: relative;
-    width: 100%;
-    height: 460px;
-    border-radius: 20px;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
-    cursor: grab;
-  }
-  .sim3d-wrapper:active { cursor: grabbing; }
-  .sim3d-hud {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    right: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    pointer-events: none;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .hud-card {
-    background: rgba(15, 23, 42, 0.78);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #f8fafc;
-    padding: 0.65rem 1rem;
-    border-radius: 14px;
-    font-size: 0.8rem;
-    pointer-events: auto;
-  }
-  .hud-card code {
-    font-family: 'JetBrains Mono', monospace;
-    color: #38bdf8;
-    font-size: 0.76rem;
-  }
-  .sim3d-legend {
-    position: absolute;
-    bottom: 12px;
-    left: 14px;
-    right: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    pointer-events: none;
-  }
-  .legend-pills {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .legend-pill {
-    background: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: #e2e8f0;
-    padding: 0.25rem 0.65rem;
-    border-radius: 50px;
-    font-size: 0.74rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .dot-ind { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .sim3d-btn-group {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    margin-top: 0.4rem;
-  }
-  .btn-chip {
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(0, 194, 203, 0.35);
-    color: var(--text);
-    padding: 0.45rem 0.95rem;
-    border-radius: 50px;
-    font-size: 0.84rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-chip:hover { background: white; }
-  .btn-chip.active {
-    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(0,194,203,0.35);
-  }
-
   .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; margin: 1.9rem 0; }
   .comp-box {
     text-align: center; padding: 1.5rem; border-radius: 22px;
@@ -458,7 +365,6 @@
     .comparison { grid-template-columns: 1fr; }
     .hero-glass { padding: 2.6rem 1.5rem; }
     .orb-1, .orb-2, .ring-1 { display: none; }
-    .sim3d-wrapper { height: 380px; }
   }
 
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
@@ -603,9 +509,8 @@
     <section id="simuladores">
       <div class="deco-line"></div>
       <h2 class="section-title"><span>02 ·</span> Simuladores Interativos</h2>
-      <p class="section-subtitle">Experimente a física e a eletrônica embarcada em tempo real</p>
+      <p class="section-subtitle">Experimente a física em tempo real</p>
 
-      <!-- SIMULADOR 1 -->
       <div class="simulator">
         <h3 style="margin-bottom:0.5rem;">Simulador 1 — Emissão de Radiação × Temperatura</h3>
         <p style="color:var(--text-soft); font-size:0.95rem;">Ajuste a temperatura e observe a potência radiativa (Lei de Stefan-Boltzmann).</p>
@@ -626,7 +531,6 @@
         </div>
       </div>
 
-      <!-- SIMULADOR 2 -->
       <div class="simulator">
         <h3 style="margin-bottom:0.5rem;">Simulador 2 — Efeito da Cobertura Térmica</h3>
         <p style="color:var(--text-soft); font-size:0.95rem;">Compare a perda de energia com e sem cobertura inteligente.</p>
@@ -649,64 +553,6 @@
             <h4>Com cobertura</h4>
             <div class="heat-bar" id="barCom" style="width:30%; background:linear-gradient(90deg,#00c2cb,#7ee8ef);"></div>
             <p id="lossCom">Perda residual: 30%</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- SIMULADOR 3 (NOVO: BANCADA 3D ARDUINO UNO) -->
-      <div class="simulator">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
-          <h3>Simulador 3 — Bancada IoT 3D (Arduino Uno & Sensores)</h3>
-          <span class="badge" style="margin:0;">WebGL 3D Interativo</span>
-        </div>
-        <p style="color:var(--text-soft); font-size:0.95rem;">
-          Arraste para girar a bancada 3D e use o scroll para dar zoom. Teste a leitura dos sensores (Temperatura DHT11 + Infravermelho MLX90614) e o acionamento dos LEDs de controle.
-        </p>
-
-        <div class="sim-controls">
-          <div class="slider-group">
-            <label for="sim3dTemp">Temperatura Lida pelo Sensor (°C)</label>
-            <input type="range" id="sim3dTemp" min="18" max="36" value="25" step="0.5">
-            <div class="value-display" id="sim3dTempVal">25.0 °C</div>
-          </div>
-          <div class="slider-group">
-            <label>Período / Radiação Solar (Sensor LDR/IR)</label>
-            <div class="sim3d-btn-group">
-              <button class="btn-chip active" id="btnNight">🌙 Noite (Perda IR Alta)</button>
-              <button class="btn-chip" id="btnDay">☀️ Dia (Ganho Solar)</button>
-            </div>
-          </div>
-          <div class="slider-group">
-            <label>Controle de Atuação</label>
-            <div class="sim3d-btn-group">
-              <button class="btn-chip active" id="btnAuto">🤖 Automático</button>
-              <button class="btn-chip" id="btnLedToggle">💡 Alternar LED Manual</button>
-              <button class="btn-chip" id="btnResetCam">🎥 Resetar Câmera</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="sim3d-wrapper" id="sim3dContainer" aria-label="Simulador 3D interativo com Arduino Uno, Protoboard, Fios, LEDs e Sensores">
-          <div class="sim3d-hud">
-            <div class="hud-card">
-              <div style="font-weight:600; color:#7ee8ef; margin-bottom:3px;">📟 Monitor Serial (9600 baud)</div>
-              <code id="serialLog">TEMP: 25.0°C | IR_LOSS: ALTO | COBERTURA: FECHADA [LED_VM: ON]</code>
-            </div>
-            <div class="hud-card" style="text-align:right;">
-              <div style="font-size:0.72rem; color:#94a3b8;">Controles 3D</div>
-              <div>🖱️ Arrastar: Girar · Scroll: Zoom</div>
-            </div>
-          </div>
-
-          <div class="sim3d-legend">
-            <div class="legend-pills">
-              <span class="legend-pill"><span class="dot-ind" style="background:#00979d;"></span> Arduino Uno R3</span>
-              <span class="legend-pill"><span class="dot-ind" style="background:#f8fafc;"></span> Protoboard 400pts</span>
-              <span class="legend-pill"><span class="dot-ind" style="background:#38bdf8;"></span> Sensor DHT11</span>
-              <span class="legend-pill"><span class="dot-ind" style="background:#eab308;"></span> Sensor IR MLX90614</span>
-              <span class="legend-pill"><span class="dot-ind" style="background:#ef4444;"></span> LED Alerta / Cobertura</span>
-              <span class="legend-pill"><span class="dot-ind" style="background:#22c55e;"></span> LED Aquecimento Ideal</span>
-            </div>
           </div>
         </div>
       </div>
@@ -738,9 +584,9 @@
             a cobertura e aciona motores. Dados em dashboard em tempo real.
           </p>
           <div class="tech-row">
-            <span class="tech-chip">Arduino Uno</span>
             <span class="tech-chip">ESP32</span>
-            <span class="tech-chip">Sensores DHT11 & IR</span>
+            <span class="tech-chip">Sensores DHT</span>
+            <span class="tech-chip">MQTT</span>
             <span class="tech-chip">Dashboard</span>
           </div>
         </div>
@@ -809,18 +655,7 @@
     </div>
   </footer>
 
-<!-- Import Three.js & OrbitControls via Import Map -->
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-  }
-</script>
-
 <script>
-  // ====== UI & ACCESSIBILITY ======
   const menuBtn = document.getElementById('menuBtn');
   const navMenu = document.getElementById('navMenu');
   menuBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
@@ -842,7 +677,6 @@
     document.documentElement.style.fontSize = fontSize + 'px';
   });
 
-  // ====== SIMULATOR 1 ======
   const tempSlider = document.getElementById('tempSlider');
   const tempValue = document.getElementById('tempValue');
   const powerValue = document.getElementById('powerValue');
@@ -893,7 +727,6 @@
   tempSlider.addEventListener('input', updateEmission);
   updateEmission();
 
-  // ====== SIMULATOR 2 ======
   const coverSlider = document.getElementById('coverSlider');
   const coverValue = document.getElementById('coverValue');
   const barCom = document.getElementById('barCom');
@@ -918,458 +751,6 @@
         navMenu.classList.remove('open');
       }
     });
-  });
-</script>
-
-<!-- ====== SIMULATOR 3 (3D HARDWARE BENCH WITH THREE.JS) ====== -->
-<script type="module">
-  import * as THREE from 'three';
-  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-  const container = document.getElementById('sim3dContainer');
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x0f172a, 0.035);
-
-  const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 100);
-  const defaultCamPos = new THREE.Vector3(0, 7.5, 9.8);
-  camera.position.copy(defaultCamPos);
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
-  container.appendChild(renderer.domElement);
-
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.06;
-  controls.maxPolarAngle = Math.PI / 2 - 0.05;
-  controls.minDistance = 4.5;
-  controls.maxDistance = 18;
-  controls.target.set(0, 0.4, 0);
-
-  // ====== LIGHTING ======
-  const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.65);
-  scene.add(ambientLight);
-
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
-  dirLight.position.set(6, 12, 8);
-  dirLight.castShadow = true;
-  dirLight.shadow.mapSize.width = 2048;
-  dirLight.shadow.mapSize.height = 2048;
-  dirLight.shadow.camera.near = 1;
-  dirLight.shadow.camera.far = 30;
-  const d = 8;
-  dirLight.shadow.camera.left = -d;
-  dirLight.shadow.camera.right = d;
-  dirLight.shadow.camera.top = d;
-  dirLight.shadow.camera.bottom = -d;
-  dirLight.shadow.bias = -0.0005;
-  scene.add(dirLight);
-
-  const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.8);
-  rimLight.position.set(-7, 5, -6);
-  scene.add(rimLight);
-
-  // ====== MATERIALS ======
-  const matDesk = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.75, metalness: 0.1 });
-  const matArduinoPCB = new THREE.MeshStandardMaterial({ color: 0x00878f, roughness: 0.35, metalness: 0.15 });
-  const matMetal = new THREE.MeshStandardMaterial({ color: 0xd1d5db, roughness: 0.25, metalness: 0.88 });
-  const matGold = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.25, metalness: 0.9 });
-  const matBlackPlastic = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.55, metalness: 0.1 });
-  const matBreadboard = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.45, metalness: 0.05 });
-  const matDHT = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.4, metalness: 0.1 });
-  const matIRBoard = new THREE.MeshStandardMaterial({ color: 0x6d28d9, roughness: 0.4, metalness: 0.2 });
-
-  // ====== WORKBENCH TABLE & GRID ======
-  const desk = new THREE.Mesh(new THREE.BoxGeometry(24, 0.5, 16), matDesk);
-  desk.position.y = -0.25;
-  desk.receiveShadow = true;
-  scene.add(desk);
-
-  const gridHelper = new THREE.GridHelper(22, 44, 0x38bdf8, 0x334155);
-  gridHelper.position.y = 0.01;
-  gridHelper.material.opacity = 0.28;
-  gridHelper.material.transparent = true;
-  scene.add(gridHelper);
-
-  // ====== 1. ARDUINO UNO R3 ======
-  const arduinoGroup = new THREE.Group();
-  arduinoGroup.position.set(-2.5, 0.12, 0.4);
-  scene.add(arduinoGroup);
-
-  // PCB Board
-  const pcb = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.1, 2.5), matArduinoPCB);
-  pcb.castShadow = true;
-  pcb.receiveShadow = true;
-  arduinoGroup.add(pcb);
-
-  // USB Type-B Port
-  const usbPort = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.55, 0.65), matMetal);
-  usbPort.position.set(-1.55, 0.32, -0.55);
-  usbPort.castShadow = true;
-  arduinoGroup.add(usbPort);
-
-  // Barrel Power Jack
-  const powerJack = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.5, 0.48), matBlackPlastic);
-  powerJack.position.set(-1.5, 0.28, 0.72);
-  powerJack.castShadow = true;
-  arduinoGroup.add(powerJack);
-
-  // ATmega328P Microcontroller Chip
-  const atmega = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.16, 0.42), matBlackPlastic);
-  atmega.position.set(0.45, 0.13, 0.35);
-  atmega.castShadow = true;
-  arduinoGroup.add(atmega);
-
-  // Chip metallic legs
-  for (let i = 0; i < 14; i++) {
-    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.06), matMetal);
-    legL.position.set(-0.33 + i * 0.12, 0.08, 0.58);
-    arduinoGroup.add(legL);
-
-    const legR = legL.clone();
-    legR.position.z = 0.12;
-    arduinoGroup.add(legR);
-  }
-
-  // Crystal Oscillator & Reset Button
-  const crystal = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.45, 16), matMetal);
-  crystal.rotation.z = Math.PI / 2;
-  crystal.position.set(-0.55, 0.12, -0.15);
-  arduinoGroup.add(crystal);
-
-  const resetBtnBase = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.1, 0.28), matMetal);
-  resetBtnBase.position.set(-1.35, 0.1, -1.02);
-  arduinoGroup.add(resetBtnBase);
-  const resetBtnCap = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.12, 16), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
-  resetBtnCap.position.set(-1.35, 0.18, -1.02);
-  arduinoGroup.add(resetBtnCap);
-
-  // Female Header Pins (Top & Bottom)
-  const headerTop = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.35, 0.18), matBlackPlastic);
-  headerTop.position.set(0.35, 0.22, -1.08);
-  headerTop.castShadow = true;
-  arduinoGroup.add(headerTop);
-
-  const headerBot = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.35, 0.18), matBlackPlastic);
-  headerBot.position.set(0.55, 0.22, 1.08);
-  headerBot.castShadow = true;
-  arduinoGroup.add(headerBot);
-
-  // Arduino Built-in ON LED (Green)
-  const onboardLedMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x22c55e, emissiveIntensity: 2.0 });
-  const onboardLed = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.08), onboardLedMat);
-  onboardLed.position.set(0.95, 0.08, -0.45);
-  arduinoGroup.add(onboardLed);
-
-  // ====== 2. PROTOBOARD (BREADBOARD 400 PTS) ======
-  const breadboardGroup = new THREE.Group();
-  breadboardGroup.position.set(2.2, 0.15, 0.4);
-  scene.add(breadboardGroup);
-
-  const bbBody = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.26, 2.4), matBreadboard);
-  bbBody.castShadow = true;
-  bbBody.receiveShadow = true;
-  breadboardGroup.add(bbBody);
-
-  // Center trench
-  const trench = new THREE.Mesh(new THREE.BoxGeometry(3.75, 0.04, 0.24), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
-  trench.position.y = 0.12;
-  breadboardGroup.add(trench);
-
-  // Power rails lines (Red & Blue)
-  const redLineTop = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.01, 0.03), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
-  redLineTop.position.set(0, 0.132, -1.06);
-  breadboardGroup.add(redLineTop);
-
-  const blueLineTop = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.01, 0.03), new THREE.MeshBasicMaterial({ color: 0x3b82f6 }));
-  blueLineTop.position.set(0, 0.132, -0.82);
-  breadboardGroup.add(blueLineTop);
-
-  // Instanced pin holes for realistic protoboard look
-  const holeGeo = new THREE.BoxGeometry(0.055, 0.02, 0.055);
-  const holeMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
-  const holesInstanced = new THREE.InstancedMesh(holeGeo, holeMat, 300);
-  const dummy = new THREE.Object3D();
-  let idx = 0;
-  for (let col = 0; col < 30; col++) {
-    const x = -1.65 + col * 0.114;
-    const rowsZ = [-0.62, -0.50, -0.38, -0.26, 0.26, 0.38, 0.50, 0.62, -0.94, 0.94];
-    for (let r = 0; r < rowsZ.length; r++) {
-      dummy.position.set(x, 0.131, rowsZ[r]);
-      dummy.updateMatrix();
-      holesInstanced.setMatrixAt(idx++, dummy.matrix);
-    }
-  }
-  breadboardGroup.add(holesInstanced);
-
-  // ====== 3. SENSORS ON PROTOBOARD ======
-  // Sensor A: DHT11 (Temperatura e Umidade)
-  const dhtGroup = new THREE.Group();
-  dhtGroup.position.set(-1.1, 0.28, -0.45);
-  breadboardGroup.add(dhtGroup);
-
-  const dhtBody = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.72, 0.28), matDHT);
-  dhtBody.position.y = 0.45;
-  dhtBody.castShadow = true;
-  dhtGroup.add(dhtBody);
-
-  // DHT11 ventilation grid
-  const dhtGrid = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.46, 0.3), new THREE.MeshStandardMaterial({ color: 0x0369a1 }));
-  dhtGrid.position.y = 0.48;
-  dhtGroup.add(dhtGrid);
-
-  for (let p = -1; p <= 1; p++) {
-    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.25, 8), matMetal);
-    pin.position.set(p * 0.12, 0.05, 0);
-    dhtGroup.add(pin);
-  }
-
-  // Sensor B: MLX90614 (Sensor Infravermelho Sem Contato)
-  const irSensorGroup = new THREE.Group();
-  irSensorGroup.position.set(-0.1, 0.28, -0.45);
-  breadboardGroup.add(irSensorGroup);
-
-  const irPCB = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.55, 0.08), matIRBoard);
-  irPCB.position.y = 0.38;
-  irPCB.castShadow = true;
-  irSensorGroup.add(irPCB);
-
-  // TO-39 Metallic IR Can
-  const irCan = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.28, 24), matMetal);
-  irCan.rotation.x = Math.PI / 2;
-  irCan.position.set(0, 0.42, 0.14);
-  irCan.castShadow = true;
-  irSensorGroup.add(irCan);
-
-  // IR Germanium Lens
-  const irLens = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.11, 0.11, 0.04, 20),
-    new THREE.MeshStandardMaterial({ color: 0x1e1b4b, roughness: 0.1, metalness: 0.9 })
-  );
-  irLens.rotation.x = Math.PI / 2;
-  irLens.position.set(0, 0.42, 0.28);
-  irSensorGroup.add(irLens);
-
-  // Subtle IR Laser/Cone Beam visualization
-  const irBeamGeo = new THREE.ConeGeometry(0.65, 2.2, 24, 1, true);
-  const irBeamMat = new THREE.MeshBasicMaterial({
-    color: 0xf43f5e,
-    transparent: true,
-    opacity: 0.14,
-    side: THREE.DoubleSide,
-    depthWrite: false
-  });
-  const irBeam = new THREE.Mesh(irBeamGeo, irBeamMat);
-  irBeam.rotation.x = -Math.PI / 2;
-  irBeam.position.set(0, 0.42, 1.38);
-  irSensorGroup.add(irBeam);
-
-  // ====== 4. LEDs & RESISTORS ON PROTOBOARD ======
-  function createLED(colorHex, xPos, zPos) {
-    const ledGroup = new THREE.Group();
-    ledGroup.position.set(xPos, 0.28, zPos);
-
-    // Legs
-    const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.35, 8), matMetal);
-    leg1.position.set(-0.05, 0.12, 0);
-    const leg2 = leg1.clone();
-    leg2.position.x = 0.05;
-    ledGroup.add(leg1, leg2);
-
-    // Translucent Bulb + Dome
-    const matLed = new THREE.MeshStandardMaterial({
-      color: colorHex,
-      emissive: colorHex,
-      emissiveIntensity: 0.15,
-      roughness: 0.15,
-      transparent: true,
-      opacity: 0.92
-    });
-
-    const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.24, 20), matLed);
-    cyl.position.y = 0.38;
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.11, 20, 16), matLed);
-    dome.position.y = 0.50;
-    ledGroup.add(cyl, dome);
-
-    // PointLight for realistic glow on protoboard
-    const light = new THREE.PointLight(colorHex, 0, 3.2);
-    light.position.set(0, 0.65, 0);
-    ledGroup.add(light);
-
-    // Resistor beside LED
-    const resBody = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.045, 0.045, 0.24, 12),
-      new THREE.MeshStandardMaterial({ color: 0xe7d5b8, roughness: 0.6 })
-    );
-    resBody.rotation.z = Math.PI / 2;
-    resBody.position.set(0.22, 0.12, 0.12);
-    ledGroup.add(resBody);
-
-    breadboardGroup.add(ledGroup);
-    return { mat: matLed, light };
-  }
-
-  // Red LED (Cobertura Ativada / Alerta Perda Térmica) & Green LED (Temperatura Ideal)
-  const ledRed = createLED(0xef4444, 0.85, 0.38);
-  const ledGreen = createLED(0x22c55e, 1.45, 0.38);
-
-  // ====== 5. REALISTIC 3D JUMPER WIRES ======
-  function createJumperWire(startVec, endVec, arcHeight, colorHex) {
-    const mid = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
-    mid.y += arcHeight;
-    const ctrl1 = new THREE.Vector3().lerpVectors(startVec, mid, 0.5);
-    ctrl1.y += arcHeight * 0.35;
-    const ctrl2 = new THREE.Vector3().lerpVectors(mid, endVec, 0.5);
-    ctrl2.y += arcHeight * 0.35;
-
-    const curve = new THREE.CatmullRomCurve3([startVec, ctrl1, mid, ctrl2, endVec]);
-    const tubeGeo = new THREE.TubeGeometry(curve, 32, 0.026, 10, false);
-    const tubeMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.35, metalness: 0.1 });
-    const wire = new THREE.Mesh(tubeGeo, tubeMat);
-    wire.castShadow = true;
-    scene.add(wire);
-
-    // Black Dupont Connector tips
-    const tipGeo = new THREE.BoxGeometry(0.075, 0.18, 0.075);
-    const tipStart = new THREE.Mesh(tipGeo, matBlackPlastic);
-    tipStart.position.copy(startVec);
-    const tipEnd = new THREE.Mesh(tipGeo, matBlackPlastic);
-    tipEnd.position.copy(endVec);
-    scene.add(tipStart, tipEnd);
-  }
-
-  // Wires connecting Arduino Uno -> Protoboard
-  // 5V (Red)
-  createJumperWire(new THREE.Vector3(-2.1, 0.52, 1.48), new THREE.Vector3(0.7, 0.35, 1.34), 1.1, 0xef4444);
-  // GND (Black)
-  createJumperWire(new THREE.Vector3(-1.95, 0.52, 1.48), new THREE.Vector3(0.95, 0.35, 1.34), 0.9, 0x1e293b);
-  // Digital Pin 7 -> LED Red (Orange)
-  createJumperWire(new THREE.Vector3(-1.8, 0.52, -0.68), new THREE.Vector3(3.05, 0.35, 0.90), 1.45, 0xf97316);
-  // Digital Pin 8 -> LED Green (Green)
-  createJumperWire(new THREE.Vector3(-1.65, 0.52, -0.68), new THREE.Vector3(3.65, 0.35, 0.90), 1.65, 0x22c55e);
-  // Digital Pin 2 -> DHT11 Data (Cyan)
-  createJumperWire(new THREE.Vector3(-1.35, 0.52, -0.68), new THREE.Vector3(1.1, 0.35, 0.15), 1.25, 0x06b6d4);
-  // Analog A4/A5 -> IR Sensor SDA/SCL (Yellow & Purple)
-  createJumperWire(new THREE.Vector3(-1.2, 0.52, 1.48), new THREE.Vector3(2.1, 0.35, 0.15), 1.3, 0xeab308);
-  createJumperWire(new THREE.Vector3(-1.05, 0.52, 1.48), new THREE.Vector3(2.22, 0.35, 0.15), 1.45, 0xa855f7);
-
-  // ====== INTERACTIVE LOGIC & STATE ======
-  const sim3dTemp = document.getElementById('sim3dTemp');
-  const sim3dTempVal = document.getElementById('sim3dTempVal');
-  const serialLog = document.getElementById('serialLog');
-  const btnNight = document.getElementById('btnNight');
-  const btnDay = document.getElementById('btnDay');
-  const btnAuto = document.getElementById('btnAuto');
-  const btnLedToggle = document.getElementById('btnLedToggle');
-  const btnResetCam = document.getElementById('btnResetCam');
-
-  let isNight = true;
-  let autoMode = true;
-  let manualRedOn = true;
-
-  function setLedState(redOn, greenOn) {
-    ledRed.mat.emissiveIntensity = redOn ? 3.2 : 0.1;
-    ledRed.light.intensity = redOn ? 2.8 : 0;
-
-    ledGreen.mat.emissiveIntensity = greenOn ? 3.2 : 0.1;
-    ledGreen.light.intensity = greenOn ? 2.8 : 0;
-  }
-
-  function updateSim3D() {
-    const temp = parseFloat(sim3dTemp.value);
-    sim3dTempVal.textContent = temp.toFixed(1) + ' °C';
-
-    let redActive = false;
-    let greenActive = false;
-
-    if (autoMode) {
-      // Lógica embarcada: se estiver de noite ou temperatura < 27°C, fecha cobertura (LED Vermelho)
-      if (isNight || temp < 27.0) {
-        redActive = true;
-        greenActive = false;
-        serialLog.textContent = `TEMP: ${temp.toFixed(1)}°C | ${isNight ? 'NOITE (IR ALTO)' : 'FRIO'} -> COBERTURA: FECHADA [LED_VM: ON]`;
-      } else {
-        redActive = false;
-        greenActive = true;
-        serialLog.textContent = `TEMP: ${temp.toFixed(1)}°C | DIA (GANHO SOLAR) -> COBERTURA: ABERTA [LED_VD: ON]`;
-      }
-    } else {
-      redActive = manualRedOn;
-      greenActive = !manualRedOn;
-      serialLog.textContent = `[MODO MANUAL] TEMP: ${temp.toFixed(1)}°C | LED_VM: ${redActive ? 'ON' : 'OFF'} | LED_VD: ${greenActive ? 'ON' : 'OFF'}`;
-    }
-
-    setLedState(redActive, greenActive);
-  }
-
-  sim3dTemp.addEventListener('input', updateSim3D);
-
-  btnNight.addEventListener('click', () => {
-    isNight = true;
-    btnNight.classList.add('active');
-    btnDay.classList.remove('active');
-    dirLight.intensity = 1.4;
-    ambientLight.intensity = 0.55;
-    updateSim3D();
-  });
-
-  btnDay.addEventListener('click', () => {
-    isNight = false;
-    btnDay.classList.add('active');
-    btnNight.classList.remove('active');
-    dirLight.intensity = 2.6;
-    ambientLight.intensity = 0.9;
-    updateSim3D();
-  });
-
-  btnAuto.addEventListener('click', () => {
-    autoMode = true;
-    btnAuto.classList.add('active');
-    btnLedToggle.classList.remove('active');
-    updateSim3D();
-  });
-
-  btnLedToggle.addEventListener('click', () => {
-    autoMode = false;
-    manualRedOn = !manualRedOn;
-    btnLedToggle.classList.add('active');
-    btnAuto.classList.remove('active');
-    updateSim3D();
-  });
-
-  btnResetCam.addEventListener('click', () => {
-    camera.position.copy(defaultCamPos);
-    controls.target.set(0, 0.4, 0);
-  });
-
-  updateSim3D();
-
-  // ====== ANIMATION LOOP & RESIZE ======
-  const clock = new THREE.Clock();
-  function animate() {
-    requestAnimationFrame(animate);
-    const elapsed = clock.getElapsedTime();
-
-    // Subtle pulse on IR beam & Arduino onboard LED
-    irBeamMat.opacity = 0.10 + Math.sin(elapsed * 4) * 0.05;
-    onboardLedMat.emissiveIntensity = 1.6 + Math.sin(elapsed * 6) * 0.4;
-
-    controls.update();
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  window.addEventListener('resize', () => {
-    if (!container.clientWidth) return;
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
   });
 </script>
 </body>
