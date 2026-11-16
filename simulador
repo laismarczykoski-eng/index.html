@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório 3D Ultra-HD de Robótica & Física Solar</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Three.js, OrbitControls & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Chart.js for Live Graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- KaTeX for LaTeX Math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background-color: #030712;
+            user-select: none;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
+
+        /* Glassmorphic Panels */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* LCD 16x2 Emulation */
+        .lcd-display {
+            background-color: #1a3a2a;
+            color: #33ff77;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            text-shadow: 0 0 4px rgba(51, 255, 119, 0.6);
+        }
+
+        .thermal-tint-active {
+            box-shadow: inset 0 0 120px rgba(239, 68, 68, 0.25);
+        }
+
+        /* Glow animation */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.9; }
+        }
+        .animate-glow { animation: pulse-glow 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="text-slate-100 h-screen w-screen relative overflow-hidden select-none">
+
+    <!-- 3D WebGL Canvas Viewport -->
+    <div id="canvas-container" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
+
+    <!-- Thermal / InfraRed Overlay Filter -->
+    <div id="thermal-overlay" class="absolute inset-0 pointer-events-none z-10 transition-all duration-500 opacity-0 border-4 border-red-500/20"></div>
+
+    <!-- Header Overlay -->
+    <header class="absolute top-0 left-0 right-0 z-20 p-4 flex justify-between items-center pointer-events-none">
+        <div class="glass-panel px-4 py-2.5 rounded-2xl pointer-events-auto flex items-center gap-3 shadow-2xl border border-slate-700/60">
+            <div class="bg-gradient-to-br from-blue-600 to-cyan-500 p-2.5 rounded-xl text-white shadow-lg shadow-blue-500/20">
+                <i class="fa-solid fa-microchip text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-sm sm:text-base text-slate-100 flex items-center gap-2">
+                    Robótica & Física Solar <span class="bg-blue-500/20 text-blue-400 text-xs px-2.5 py-0.5 rounded-full border border-blue-500/30 font-semibold">PBR 3D Ultra-HD</span>
+                </h1>
+                <p class="text-xs text-slate-400">Simulador Fototérmico, Infravermelho & Automação Arduino</p>
+            </div>
+        </div>
+
+        <!-- Camera Focus Hotspots & IR Mode -->
+        <div class="glass-panel px-3 py-1.5 rounded-2xl pointer-events-auto flex items-center gap-2 shadow-2xl">
+            <div class="hidden lg:flex items-center gap-1 border-r border-slate-800 pr-2 mr-1">
+                <span class="text-xs text-slate-400 mr-1"><i class="fa-solid fa-eye text-blue-400 mr-1"></i>Foco:</span>
+                <button onclick="focusCamera('overview')" class="px-2.5 py-1 text-xs bg-slate-800/80 hover:bg-blue-600/30 hover:text-blue-300 text-slate-300 rounded-lg border border-slate-700/60 transition">Visão Geral</button>
+                <button onclick="focusCamera('arduino')" class="px-2.5 py-1 text-xs bg-slate-800/80 hover:bg-blue-600/30 hover:text-blue-300 text-slate-300 rounded-lg border border-slate-700/60 transition">Arduino & Circuitos</button>
+                <button onclick="focusCamera('pool')" class="px-2.5 py-1 text-xs bg-slate-800/80 hover:bg-blue-600/30 hover:text-blue-300 text-slate-300 rounded-lg border border-slate-700/60 transition">Piscina & Sonda</button>
+                <button onclick="focusCamera('panel')" class="px-2.5 py-1 text-xs bg-slate-800/80 hover:bg-blue-600/30 hover:text-blue-300 text-slate-300 rounded-lg border border-slate-700/60 transition">Painel Fotovoltaico</button>
+            </div>
+
+            <!-- IR Infrared Camera Mode -->
+            <button id="btn-thermal" onclick="toggleThermalVision()" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 transition flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-fire-flame-curved"></i>
+                <span id="label-thermal">Visão Térmica (IR)</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Floating Component Interactive Tooltip -->
+    <div id="tooltip" class="absolute z-30 pointer-events-none transition-all duration-300 opacity-0 transform translate-y-2 hidden">
+        <div class="glass-panel p-3.5 rounded-2xl border border-blue-500/40 shadow-2xl max-w-xs text-xs">
+            <div id="tooltip-title" class="font-bold text-blue-400 text-sm mb-1 flex items-center justify-between">
+                <span>Componente</span>
+                <i class="fa-solid fa-circle-info text-blue-400 text-xs"></i>
+            </div>
+            <div id="tooltip-desc" class="text-slate-300 leading-relaxed">Detalhes do componente no circuito.</div>
+        </div>
+    </div>
+
+    <!-- Live LCD Screen Overlay (Bottom-Left) -->
+    <div class="absolute bottom-5 left-5 z-20 pointer-events-auto">
+        <div class="glass-panel p-3.5 rounded-2xl border border-slate-700/80 shadow-2xl w-80">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                    <i class="fa-solid fa-desktop text-emerald-400"></i> LCD 16x2 I2C Telemetria
+                </span>
+                <span class="flex items-center gap-1">
+                    <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-mono text-emerald-400">ONLINE</span>
+                </span>
+            </div>
+            <div class="lcd-display p-3 rounded-xl font-mono text-xs font-bold tracking-widest border border-emerald-900/50">
+                <div id="lcd-line-1">TEMP:24.5C SOL:1000W</div>
+                <div id="lcd-line-2">VOLT:4.85V P:14.5W</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IR Virtual Remote Control (Bottom-Center) -->
+    <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
+        <div class="glass-panel px-4 py-2.5 rounded-2xl border border-amber-500/30 shadow-2xl flex items-center gap-3">
+            <span class="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-remote"></i> Controle IR:
+            </span>
+            <div class="flex items-center gap-1.5">
+                <button onclick="sendIRCommand('HEAT_ON')" class="px-2.5 py-1 text-xs bg-red-600/80 hover:bg-red-500 text-white rounded-lg font-medium transition shadow">Ligar Aquec.</button>
+                <button onclick="sendIRCommand('HEAT_OFF')" class="px-2.5 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg font-medium transition">Desligar</button>
+                <button onclick="sendIRCommand('MODE_AUTO')" class="px-2.5 py-1 text-xs bg-amber-600/80 hover:bg-amber-500 text-white rounded-lg font-medium transition">Modo Auto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toggle Controls Panel Button -->
+    <div class="absolute top-20 right-5 z-20">
+        <button id="btn-toggle-sidebar" onclick="toggleSidebar()" class="glass-panel px-4 py-2.5 rounded-2xl text-xs font-semibold text-blue-400 hover:text-blue-300 border border-slate-700/80 shadow-2xl flex items-center gap-2 transition hover:bg-slate-800/80">
+            <i class="fa-solid fa-sliders text-sm"></i>
+            <span>Painel & Teoria</span>
+        </button>
+    </div>
+
+    <!-- Sidebar Window (Simulation Controls, Didactic Material & Real-Time Graphs) -->
+    <aside id="sidebar" class="absolute top-0 right-0 bottom-0 w-full sm:w-[480px] z-30 glass-panel border-l border-slate-800 p-5 overflow-y-auto flex flex-col transition-transform duration-300 transform translate-x-0 shadow-2xl">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-800">
+            <div class="flex items-center gap-2.5">
+                <div class="p-2 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <i class="fa-solid fa-flask-vial text-base"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-slate-100 text-sm">Laboratório Didático</h2>
+                    <p class="text-[11px] text-slate-400">Controles & Fundamentação Teórica</p>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-slate-100 p-2 rounded-xl hover:bg-slate-800 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex bg-slate-900/90 p-1 rounded-xl mb-4 border border-slate-800 text-xs font-medium">
+            <button onclick="switchTab('sim')" id="tab-btn-sim" class="flex-1 py-2 rounded-lg transition text-blue-400 bg-slate-800 shadow">Simulador</button>
+            <button onclick="switchTab('t6')" id="tab-btn-t6" class="flex-1 py-2 rounded-lg transition text-slate-400 hover:text-slate-200">6. Temp</button>
+            <button onclick="switchTab('t7')" id="tab-btn-t7" class="flex-1 py-2 rounded-lg transition text-slate-400 hover:text-slate-200">7. Luz/IR</button>
+            <button onclick="switchTab('t8')" id="tab-btn-t8" class="flex-1 py-2 rounded-lg transition text-slate-400 hover:text-slate-200">8. Fotov.</button>
+            <button onclick="switchTab('t9')" id="tab-btn-t9" class="flex-1 py-2 rounded-lg transition text-slate-400 hover:text-slate-200">9. Piscina</button>
+        </div>
+
+        <!-- TAB CONTENT: SIMULATOR CONTROLS & LIVE GRAPH -->
+        <div id="tab-content-sim" class="space-y-4 flex-1">
+            <!-- Sun & Radiation Controls -->
+            <div class="glass-card p-4 rounded-2xl space-y-3.5">
+                <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-sun text-amber-400 text-sm"></i> Radiação Solar & Ambiente</span>
+                    <span id="ir-beam-indicator" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Feixe IR Ativo</span>
+                </h3>
+                
+                <!-- Sun Angle Slider -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="text-slate-400">Posição Angular do Sol ($\theta$)</span>
+                        <span id="val-sun-angle" class="font-mono text-blue-400 font-bold">45°</span>
+                    </div>
+                    <input type="range" id="slider-sun-angle" min="5" max="175" value="45" class="w-full accent-blue-500 bg-slate-800 h-2 rounded-lg cursor-pointer">
+                </div>
+
+                <!-- Sun Irradiance Slider -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="text-slate-400">Irradiância Solar Directa ($G$)</span>
+                        <span id="val-sun-intensity" class="font-mono text-amber-400 font-bold">1000 W/m²</span>
+                    </div>
+                    <input type="range" id="slider-sun-intensity" min="0" max="1200" value="1000" step="50" class="w-full accent-amber-500 bg-slate-800 h-2 rounded-lg cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Photovoltaic Panel & Pump Actuators -->
+            <div class="glass-card p-4 rounded-2xl space-y-3.5">
+                <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-gears text-blue-400 text-sm"></i> Atuadores & Maqueta Robótica
+                </h3>
+
+                <!-- Pump Toggle -->
+                <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                    <div>
+                        <div class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-water-ladders text-sky-400"></i> Bomba Térmica de Circulação
+                        </div>
+                        <div class="text-[10px] text-slate-400">Transferência de calor para a piscina</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-pump" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                <!-- Solar Panel Tilt Angle -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="text-slate-400">Inclinação do Coletor / Painel ($\beta$)</span>
+                        <span id="val-panel-tilt" class="font-mono text-blue-400 font-bold">30°</span>
+                    </div>
+                    <input type="range" id="slider-panel-tilt" min="-45" max="45" value="30" class="w-full accent-blue-500 bg-slate-800 h-2 rounded-lg cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Telemetry Dashboard -->
+            <div class="glass-card p-4 rounded-2xl space-y-3">
+                <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-chart-line text-emerald-400 text-sm"></i> Telemetria Térmica & Elétrica</span>
+                </h3>
+
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-slate-400 text-[11px] mb-0.5">Temp. Água (DS18B20)</div>
+                        <div id="read-temp" class="text-xl font-bold font-mono text-emerald-400">24.5 °C</div>
+                        <div class="text-[10px] text-slate-500 mt-1">12-bit (ΔT = 0,0625°C)</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-slate-400 text-[11px] mb-0.5">Luminosidade (LDR)</div>
+                        <div id="read-ldr" class="text-xl font-bold font-mono text-amber-400">1.20 kΩ</div>
+                        <div id="read-lux" class="text-[10px] text-slate-400 mt-1">~8500 Lux</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-slate-400 text-[11px] mb-0.5">Tensão Gerada ($V_{oc}$)</div>
+                        <div id="read-volt" class="text-xl font-bold font-mono text-sky-400">4.85 V</div>
+                        <div id="read-power" class="text-[10px] text-sky-300 mt-1">Potência: 14.5 W</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-slate-400 text-[11px] mb-0.5">Calor Absorvido ($Q$)</div>
+                        <div id="read-heat" class="text-xl font-bold font-mono text-purple-400">52.3 kJ</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Rendimento Térmico: ~72%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart.js Live Graph -->
+            <div class="glass-card p-4 rounded-2xl">
+                <h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
+                    <span><i class="fa-solid fa-chart-area text-blue-400 mr-1.5"></i> Gráfico em Tempo Real</span>
+                    <span class="text-[10px] text-slate-500 font-mono">Atualização: 1s</span>
+                </h4>
+                <div class="w-full h-44">
+                    <canvas id="liveChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: TOPIC 6 (TEMPERATURE SENSORS) -->
+        <div id="tab-content-t6" class="hidden space-y-4 flex-1 text-xs leading-relaxed text-slate-300">
+            <div class="border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-sm text-blue-400 flex items-center gap-2">
+                    <i class="fa-solid fa-temperature-high"></i> 6. Sensores de Temperatura: Medição do Aquecimento
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Foco: Física das medidas, sensoriamento e robótica aplicada</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-blue-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt-lightning"></i> Como o sensor transforma grandeza física em sinal elétrico?
+                    </h4>
+                    <p>O sensor **DS18B20** aproveita a dependência da temperatura na tensão de *bandgap* de uma junção PN de silício interna. Um conversor analógico-digital (ADC) interno de 12 bits codifica essa variação térmica diretamente em pulsos seriais binários através do protocolo **1-Wire**.</p>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-blue-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-network-wired"></i> Medição Multiponto (Barramento 1-Wire)
+                    </h4>
+                    <p>Cada sensor DS18B20 possui um endereço físico gravado a laser de 64 bits único. Isso permite conectar **vários sensores no mesmo pino de dados do Arduino** (ex: entrada da tubulação, interior da piscina e saída do coletor solar), economizando portas no microcontrolador.</p>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-blue-300">Precisão vs Resolução vs Tempo de Resposta</h4>
+                    <ul class="list-disc list-inside space-y-1.5 text-slate-300">
+                        <li><b>Precisão (Accuracy):</b> Quão próximo a leitura está do valor real (±0,5°C de -10°C a +85°C).</li>
+                        <li><b>Resolução:</b> A menor variação detectável. No DS18B20 em 12 bits, a resolução é de **0,0625°C**.</li>
+                        <li><b>Tempo de Resposta & Inércia Térmica:</b> A cápsula de aço inoxidável e a resina de impermeabilização geram um retardo térmico ($\tau \approx 2$ a $5$s em líquidos).</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-blue-300">Algoritmo de Decisão de Aquecimento</h4>
+                    <p class="mb-2">O Arduino lê a temperatura da água da piscina ($T_{piscina}$) e da saída do coletor solar ($T_{coletor}$). A bomba só é acionada se:</p>
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 text-center font-mono text-emerald-400">
+                        $$T_{coletor} - T_{piscina} > \Delta T_{limite} \quad (\Delta T_{limite} \approx 5^\circ\text{C})$$
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: TOPIC 7 (LIGHT & IR SENSORS) -->
+        <div id="tab-content-t7" class="hidden space-y-4 flex-1 text-xs leading-relaxed text-slate-300">
+            <div class="border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-sm text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-sun"></i> 7. Sensores de Luz & Radiação Solar / Infravermelho
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Foco: Radiação eletromagnética e foto-detectores</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-amber-300">Funcionamento do LDR (Sulfeto de Cádmio)</h4>
+                    <p>O LDR baseia-se no efeito fotocondutivo: quando fótons de energia $h\nu > E_g$ incidem no semicondutor, elétrons saltam para a banda de condução, reduzindo drasticamente a resistência elétrica:</p>
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 text-center font-mono text-amber-400 my-2">
+                        $$R_{LDR} = \frac{R_{escuro}}{E^\gamma}$$
+                    </div>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-amber-300">Sensor Infravermelho (TSOP / Fototransistor)</h4>
+                    <p>A radiação térmica emitida pelo Sol situa-se predominantemente no espectro **Infravermelho (IR)**. Os receptores IR utilizam um filtro óptico para bloquear a luz visível e um circuito demodulador em **38 kHz**, permitindo comunicação remota e medição irradiativa sem interferência ambiente.</p>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-amber-300">Rastreamento Solar Dual-Axis (Solar Tracker)</h4>
+                    <p>Ao utilizar dois LDRs separados por uma divisória opaca, o Arduino compara as tensões no divisor de tensão. Se $V_{LDR1} \neq V_{LDR2}$, os servomotores ajustam o ângulo do painel até recalibrar o ponto de máxima irradiância.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: TOPIC 8 (PHOTOVOLTAIC PANELS) -->
+        <div id="tab-content-t8" class="hidden space-y-4 flex-1 text-xs leading-relaxed text-slate-300">
+            <div class="border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-sm text-sky-400 flex items-center gap-2">
+                    <i class="fa-solid fa-solar-panel"></i> 8. Placas Fotovoltaicas & Efeito Fotoelétrico
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Foco: Física moderna, efeito fotoelétrico e conversão de energia</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-sky-300">Efeito Fotoelétrico na Junção P-N</h4>
+                    <p>Quando fótons solares com energia superior ao *gap* do Silício ($E = h\nu \ge 1{,}11\text{ eV}$) atritam os átomos da célula, pares elétron-lacuna são gerados. O campo elétrico interno da junção P-N separa essas cargas, criando uma corrente contínua ($I_{fotovoltaica}$).</p>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-sky-300">Equação da Potência e Rendimento</h4>
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 text-center font-mono text-sky-400 my-2">
+                        $$P_{gerada} = A \cdot G \cdot \eta \cdot \cos(\theta)$$
+                    </div>
+                    <p>Onde $A$ é a área do painel, $G$ é a irradiância solar ($\text{W/m}^2$), $\eta$ é a eficiência (tipicamente 15% a 22%) e $\theta$ é o ângulo de incidência solar.</p>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-sky-300">Variação Diurna e Nebulosidade</h4>
+                    <p>Dias nublados dispersam a luz direta em luz difusa, reduzindo a irradiância de $1000\text{ W/m}^2$ para $100-300\text{ W/m}^2$. Como a geração é diretamente proporcional a $G$, a produção cai drasticamente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: TOPIC 9 (SCHOOL POOL HEATING) -->
+        <div id="tab-content-t9" class="hidden space-y-4 flex-1 text-xs leading-relaxed text-slate-300">
+            <div class="border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-sm text-purple-400 flex items-center gap-2">
+                    <i class="fa-solid fa-water"></i> 9. Aquecimento Solar da Piscina da Escola
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Foco: Integração da Física e avaliação tecnológica da maquete</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-purple-300">Solar Térmico vs Fotovoltaico</h4>
+                    <ul class="list-disc list-inside space-y-1 text-slate-300">
+                        <li><b>Solar Térmico (Coletores de Polipropileno):</b> Transfere o calor do Sol diretamente para a água que circula nos tubos. Eficiência altíssima (**70% a 80%**).</li>
+                        <li><b>Fotovoltaico + Resistência/Bomba de Calor:</b> Converte luz em eletricidade e alimenta uma bomba de calor. Eficiência global **menor (18-25%)**, porém gera eletricidade para outros fins.</li>
+                    </ul>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-purple-300">Balanço Energético Fundamental</h4>
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 text-center font-mono text-purple-400 my-2">
+                        $$Q = m \cdot c \cdot \Delta T$$
+                    </div>
+                    <p>Para elevar $50.000\text{ L}$ ($50.000\text{ kg}$) de água em $5^\circ\text{C}$ ($c = 4.184\text{ J/kg}^\circ\text{C}$):</p>
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 text-center font-mono text-slate-200 text-[11px] my-1">
+                        $$Q = 50000 \times 4184 \times 5 = 1{,}046 \times 10^9\text{ J} \approx 290.5\text{ kWh}$$
+                    </div>
+                </div>
+
+                <div class="glass-card p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-semibold text-slate-100 text-xs mb-1.5 text-purple-300">A Maquete Robótica como Solução Prototipada</h4>
+                    <p>A maquete 3D representa em escala real como um controlador Arduino otimiza o fluxo de água com base em dados de sensores IR, LDR e DS18B20, evitando perdas noturnas de calor e maximizando o ganho solar.</p>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- GLOBAL SIMULATION STATE ---
+        const state = {
+            sunAngle: 45,            // degrees
+            sunIntensity: 1000,      // W/m2
+            panelTilt: 30,           // degrees
+            pumpActive: true,
+            heatingPower: 1.0,
+            waterTemp: 24.5,         // Celsius
+            ldrResistance: 1200,     // Ohms
+            solarVoltage: 4.85,      // Volts
+            solarPower: 14.5,        // Watts
+            accumulatedHeat: 52.3,   // kJ
+            thermalMode: false,
+            irSignalActive: false,
+            time: 0
+        };
+
+        // --- THREE.JS SCENE SETUP ---
+        let scene, camera, renderer, controls;
+        let sunLight, sunMesh, ambientLight, spotLight;
+        let waterMesh, waterMaterial, poolWaterColor;
+        let solarPanelGroup, ds18b20Probe, ldrMesh, irSensorMesh, lcdMesh, arduinoBoard;
+        let steamParticles;
+
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0f1d);
+            scene.fog = new THREE.FogExp2(0x0a0f1d, 0.015);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(12, 14, 18);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            container.appendChild(renderer.domElement);
+
+            // Orbit Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.02; // Don't go under workbench
+            controls.minDistance = 3;
+            controls.maxDistance = 40;
+            controls.target.set(0, 2, 0);
+
+            // Lights
+            ambientLight = new THREE.AmbientLight(0x1e293b, 1.8);
+            scene.add(ambientLight);
+
+            // Sun Light (Directional)
+            sunLight = new THREE.DirectionalLight(0xfff5ea, 3.5);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.bias = -0.0001;
+            scene.add(sunLight);
+
+            // Sun Visual Mesh
+            const sunGeo = new THREE.SphereGeometry(1.2, 32, 32);
+            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+            sunMesh = new THREE.Mesh(sunGeo, sunMat);
+            scene.add(sunMesh);
+
+            // Workbench Surface
+            buildWorkbench();
+
+            // Build Components
+            buildArduinoAndBreadboard();
+            buildWaterTankPool();
+            buildSolarPhotovoltaicPanel();
+            createSteamParticles();
+
+            // Handle Resizing
+            window.addEventListener('resize', onWindowResize);
+
+            // Raycaster for interactable Tooltips
+            setupRaycaster();
+
+            // Start Loop
+            updateSunPosition();
+            animate();
+        }
+
+        // --- WORKBENCH TABLE ---
+        function buildWorkbench() {
+            // Table top
+            const tableGeo = new THREE.BoxGeometry(26, 0.8, 18);
+            const tableMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                roughness: 0.4,
+                metalness: 0.1
+            });
+            const table = new THREE.Mesh(tableGeo, tableMat);
+            table.position.y = -0.4;
+            table.receiveShadow = true;
+            scene.add(table);
+
+            // Grid Mat
+            const gridHelper = new THREE.GridHelper(24, 24, 0x3b82f6, 0x1e293b);
+            gridHelper.position.y = 0.01;
+            scene.add(gridHelper);
+        }
+
+        // --- ARDUINO & BREADBOARD ---
+        function buildArduinoAndBreadboard() {
+            const group = new THREE.Group();
+            group.position.set(-4, 0, 3);
+
+            // Arduino PCB
+            const pcbGeo = new THREE.BoxGeometry(4, 0.15, 2.8);
+            const pcbMat = new THREE.MeshStandardMaterial({ color: 0x005599, roughness: 0.2, metalness: 0.3 });
+            arduinoBoard = new THREE.Mesh(pcbGeo, pcbMat);
+            arduinoBoard.castShadow = true;
+            arduinoBoard.receiveShadow = true;
+            arduinoBoard.userData = { title: "Arduino Uno R3", desc: "Microcontrolador ATmega328P responsável pelo controle automatizado do sistema solar térmico e aquisição de sensores." };
+            group.add(arduinoBoard);
+
+            // USB Port
+            const usbGeo = new THREE.BoxGeometry(0.8, 0.6, 0.7);
+            const metalMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 });
+            const usb = new THREE.Mesh(usbGeo, metalMat);
+            usb.position.set(-1.6, 0.35, -0.8);
+            group.add(usb);
+
+            // Breadboard
+            const bbGeo = new THREE.BoxGeometry(5.5, 0.3, 3.5);
+            const bbMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.6 });
+            const breadboard = new THREE.Mesh(bbGeo, bbMat);
+            breadboard.position.set(0, 0, -4);
+            breadboard.castShadow = true;
+            breadboard.userData = { title: "Protoboard (Matriz de Ensaios)", desc: "Placa de prototipagem onde os sensores LDR, receptor IR e conexões da sonda DS18B20 são roteados ao Arduino." };
+            group.add(breadboard);
+
+            // LCD Display 16x2 on Breadboard
+            const lcdGroup = new THREE.Group();
+            lcdGroup.position.set(0, 0.5, -4);
+
+            const lcdFrameGeo = new THREE.BoxGeometry(3.2, 0.2, 1.4);
+            const lcdFrameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+            const lcdFrame = new THREE.Mesh(lcdFrameGeo, lcdFrameMat);
+            lcdGroup.add(lcdFrame);
+
+            const lcdScreenGeo = new THREE.PlaneGeometry(2.6, 0.9);
+            const lcdScreenMat = new THREE.MeshBasicMaterial({ color: 0x33ff77 });
+            lcdMesh = new THREE.Mesh(lcdScreenGeo, lcdScreenMat);
+            lcdMesh.rotation.x = -Math.PI / 2;
+            lcdMesh.position.y = 0.11;
+            lcdGroup.add(lcdMesh);
+
+            lcdGroup.userData = { title: "Display LCD 16x2 I2C", desc: "Exibe telemetria em tempo real: temperatura da piscina, irradiação solar e estado de funcionamento." };
+            group.add(lcdGroup);
+
+            // Jumper Wires (Bezier Curves)
+            createJumperWire(group, new THREE.Vector3(-1, 0.15, 0), new THREE.Vector3(-1, 0.3, -2.5), 0xef4444); // Red 5V
+            createJumperWire(group, new THREE.Vector3(-0.5, 0.15, 0), new THREE.Vector3(-0.5, 0.3, -2.5), 0x10b981); // Green GND
+            createJumperWire(group, new THREE.Vector3(0.5, 0.15, 0), new THREE.Vector3(1.2, 0.3, -3.2), 0x3b82f6); // Blue Signal
+
+            scene.add(group);
+        }
+
+        function createJumperWire(parent, start, end, colorHex) {
+            const curve = new THREE.CubicBezierCurve3(
+                start,
+                new THREE.Vector3(start.x, start.y + 1.2, start.z - 0.5),
+                new THREE.Vector3(end.x, end.y + 1.2, end.z + 0.5),
+                end
+            );
+            const points = curve.getPoints(20);
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 3 });
+            const wire = new THREE.Line(geometry, material);
+            parent.add(wire);
+        }
+
+        // --- WATER TANK / POOL MODEL ---
+        function buildWaterTankPool() {
+            const group = new THREE.Group();
+            group.position.set(5, 0, 3);
+
+            // Glass Beaker / Tank Container
+            const tankGeo = new THREE.CylinderGeometry(2.5, 2.5, 3.5, 32, 1, true);
+            const glassMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.3,
+                roughness: 0.05,
+                ior: 1.5,
+                transmission: 0.9,
+                thickness: 0.5
+            });
+            const tank = new THREE.Mesh(tankGeo, glassMat);
+            tank.position.y = 1.75;
+            tank.userData = { title: "Maquete da Piscina Escolar", desc: "Reservatório de água simulando a piscina com troca térmica direta e medição contínua." };
+            group.add(tank);
+
+            // Water Mesh
+            const waterGeo = new THREE.CylinderGeometry(2.4, 2.4, 2.8, 32);
+            poolWaterColor = new THREE.Color(0x00d2ff);
+            waterMaterial = new THREE.MeshPhysicalMaterial({
+                color: poolWaterColor,
+                transparent: true,
+                opacity: 0.75,
+                roughness: 0.1,
+                transmission: 0.6
+            });
+            waterMesh = new THREE.Mesh(waterGeo, waterMaterial);
+            waterMesh.position.y = 1.4;
+            group.add(waterMesh);
+
+            // Waterproof DS18B20 Probe submerged
+            const probeGroup = new THREE.Group();
+            probeGroup.position.set(0.5, 1.8, 0.5);
+
+            // Stainless Steel Tube
+            const tubeGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.8, 16);
+            const steelMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.95, roughness: 0.1 });
+            const tube = new THREE.Mesh(tubeGeo, steelMat);
+            probeGroup.add(tube);
+
+            // Probe Black Cable
+            const cableCurve = new THREE.CubicBezierCurve3(
+                new THREE.Vector3(0, 0.9, 0),
+                new THREE.Vector3(-1, 2.5, 0),
+                new THREE.Vector3(-5, 2.0, -5),
+                new THREE.Vector3(-9, 0.4, -6)
+            );
+            const cableGeo = new THREE.BufferGeometry().setFromPoints(cableCurve.getPoints(30));
+            const cableMat = new THREE.LineBasicMaterial({ color: 0x111827, linewidth: 4 });
+            const cable = new THREE.Line(cableGeo, cableMat);
+            probeGroup.add(cable);
+
+            probeGroup.userData = { title: "Sensor de Temp. DS18B20", desc: "Sonda digital submersível à prova d'água de 12 bits para monitoramento preciso de aquecimento." };
+            group.add(probeGroup);
+
+            scene.add(group);
+        }
+
+        // --- PHOTOVOLTAIC SOLAR PANEL & SENSORS ---
+        function buildSolarPhotovoltaicPanel() {
+            solarPanelGroup = new THREE.Group();
+            solarPanelGroup.position.set(0, 0, -2);
+
+            // Support Stand Frame
+            const baseGeo = new THREE.BoxGeometry(3, 0.2, 3);
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5 });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            solarPanelGroup.add(base);
+
+            // Rotatable Panel Head
+            const panelHead = new THREE.Group();
+            panelHead.position.y = 2.5;
+
+            // Photovoltaic Frame
+            const frameGeo = new THREE.BoxGeometry(4.2, 0.15, 3.2);
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.3 });
+            const frame = new THREE.Mesh(frameGeo, frameMat);
+            panelHead.add(frame);
+
+            // Silicon Solar Cells (Dark Blue Glossy)
+            const cellGeo = new THREE.PlaneGeometry(4.0, 3.0);
+            const cellMat = new THREE.MeshStandardMaterial({
+                color: 0x0284c7,
+                roughness: 0.1,
+                metalness: 0.6
+            });
+            const cell = new THREE.Mesh(cellGeo, cellMat);
+            cell.rotation.x = -Math.PI / 2;
+            cell.position.y = 0.09;
+            panelHead.add(cell);
+
+            // LDR Sensor mounted on corner of panel
+            const ldrGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.1, 16);
+            const ldrMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4 });
+            ldrMesh = new THREE.Mesh(ldrGeo, ldrMat);
+            ldrMesh.position.set(1.8, 0.12, 1.3);
+            ldrMesh.userData = { title: "Sensor de Luz LDR", desc: "Fotorresistor CdS que mede a intensidade de luz solar para rastreamento angular." };
+            panelHead.add(ldrMesh);
+
+            // IR Sensor Receiver (TSOP Module)
+            const irGeo = new THREE.BoxGeometry(0.2, 0.3, 0.2);
+            const irMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.1 });
+            irSensorMesh = new THREE.Mesh(irGeo, irMat);
+            irSensorMesh.position.set(-1.8, 0.2, 1.3);
+            irSensorMesh.userData = { title: "Receptor Infravermelho IR", desc: "Capta sinais IR modulados em 38kHz do controle remoto para acionamento de modos." };
+            panelHead.add(irSensorMesh);
+
+            panelHead.userData = { title: "Painel Fotovoltaico & Coletor", desc: "Converte a radiação eletromagnética solar em energia elétrica através do Efeito Fotoelétrico." };
+
+            solarPanelGroup.add(panelHead);
+            solarPanelGroup.head = panelHead; // Reference for tilt angle animation
+
+            scene.add(solarPanelGroup);
+        }
+
+        // --- STEAM PARTICLES OVER WARM WATER ---
+        function createSteamParticles() {
+            const count = 40;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+
+            for (let i = 0; i < count; i++) {
+                pos[i * 3] = (Math.random() - 0.5) * 3 + 5;
+                pos[i * 3 + 1] = Math.random() * 2 + 2.8;
+                pos[i * 3 + 2] = (Math.random() - 0.5) * 3 + 3;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const mat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.15,
+                transparent: true,
+                opacity: 0.25
+            });
+
+            steamParticles = new THREE.Points(geo, mat);
+            scene.add(steamParticles);
+        }
+
+        function updateSteamParticles() {
+            if (!steamParticles) return;
+            const pos = steamParticles.geometry.attributes.position.array;
+            const isWarm = state.waterTemp > 28;
+            steamParticles.visible = isWarm;
+
+            if (isWarm) {
+                for (let i = 0; i < pos.length / 3; i++) {
+                    pos[i * 3 + 1] += 0.015;
+                    if (pos[i * 3 + 1] > 5) {
+                        pos[i * 3 + 1] = 2.8;
+                    }
+                }
+                steamParticles.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+
+        // --- PHYSICS & COMPUTATION ENGINE ---
+        function updatePhysics() {
+            state.time += 0.05;
+
+            // 1. Calculate Solar Radiation & Angle Effect
+            const sunRad = (state.sunAngle * Math.PI) / 180;
+            const panelRad = (state.panelTilt * Math.PI) / 180;
+            const angleOffset = Math.abs(sunRad - (Math.PI / 2 - panelRad));
+            const effectiveIrradiance = state.sunIntensity * Math.max(0, Math.cos(angleOffset));
+
+            // 2. Photovoltaic Generation (P = A * G * eff)
+            const area = 0.15; // m2
+            const efficiency = 0.18;
+            state.solarPower = area * effectiveIrradiance * efficiency;
+            state.solarVoltage = Math.min(5.1, 1.2 + (state.solarPower / 3.0));
+
+            // 3. LDR Light Sensor Resistance (R = R_dark / Lux^gamma)
+            const lux = effectiveIrradiance * 8.5;
+            state.ldrResistance = Math.max(100, Math.round(500000 / (lux + 10)));
+            document.getElementById('read-lux').innerText = `~${Math.round(lux)} Lux`;
+
+            // 4. Pool Water Thermal Dynamics (Q = m * c * dT)
+            if (state.pumpActive && effectiveIrradiance > 200) {
+                const heatGain = (effectiveIrradiance * 0.0008) * state.heatingPower;
+                state.waterTemp = Math.min(45.0, state.waterTemp + heatGain);
+                state.accumulatedHeat += heatGain * 12.5;
+            } else {
+                // Cooling towards ambient (22°C)
+                state.waterTemp = Math.max(22.0, state.waterTemp - 0.005);
+            }
+
+            // 5. Update UI Telemetry Reads
+            const noise = (Math.random() - 0.5) * 0.06; // 12-bit DS18B20 noise
+            const displayTemp = (state.waterTemp + noise).toFixed(1);
+
+            document.getElementById('read-temp').innerText = `${displayTemp} °C`;
+            document.getElementById('read-ldr').innerText = `${(state.ldrResistance / 1000).toFixed(2)} kΩ`;
+            document.getElementById('read-volt').innerText = `${state.solarVoltage.toFixed(2)} V`;
+            document.getElementById('read-power').innerText = `Potência: ${state.solarPower.toFixed(1)} W`;
+            document.getElementById('read-heat').innerText = `${state.accumulatedHeat.toFixed(1)} kJ`;
+
+            // LCD Emulation Lines
+            document.getElementById('lcd-line-1').innerText = `T:${displayTemp}C SOL:${Math.round(effectiveIrradiance)}W`;
+            document.getElementById('lcd-line-2').innerText = `V:${state.solarVoltage.toFixed(2)}V P:${state.solarPower.toFixed(1)}W`;
+
+            // 6. Dynamic Water Color Transition (Blue -> Red Tint as Temp Rises)
+            if (waterMaterial) {
+                const tempRatio = Math.min(1, Math.max(0, (state.waterTemp - 22) / 20));
+                poolWaterColor.setHSL(0.55 - tempRatio * 0.55, 0.9, 0.5);
+                waterMaterial.color = poolWaterColor;
+            }
+        }
+
+        // --- SUN POSITION ANIMATION ---
+        function updateSunPosition() {
+            const rad = (state.sunAngle * Math.PI) / 180;
+            const radius = 18;
+            const x = radius * Math.cos(rad);
+            const y = radius * Math.sin(rad);
+
+            sunLight.position.set(x, y, 5);
+            sunMesh.position.set(x, y, 5);
+
+            // Sun intensity factor
+            const factor = state.sunIntensity / 1000;
+            sunLight.intensity = Math.max(0.2, Math.sin(rad) * 3.5 * factor);
+        }
+
+        // --- LIVE CHART GRAPHING (CHART.JS) ---
+        let liveChart;
+        function initChart() {
+            const ctx = document.getElementById('liveChart').getContext('2d');
+            liveChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Temp. Piscina (°C)',
+                            data: [],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Potência Solar (W)',
+                            data: [],
+                            borderColor: '#0284c7',
+                            backgroundColor: 'transparent',
+                            borderDash: [4, 4],
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Update Chart Data every 1 second
+            setInterval(() => {
+                if (!liveChart) return;
+                const timeStr = new Date().toLocaleTimeString([], { minute: '2-digit', second: '2-digit' });
+                
+                if (liveChart.data.labels.length > 15) {
+                    liveChart.data.labels.shift();
+                    liveChart.data.datasets[0].data.shift();
+                    liveChart.data.datasets[1].data.shift();
+                }
+
+                liveChart.data.labels.push(timeStr);
+                liveChart.data.datasets[0].data.push(state.waterTemp.toFixed(1));
+                liveChart.data.datasets[1].data.push(state.solarPower.toFixed(1));
+                liveChart.update('quiet');
+            }, 1000);
+        }
+
+        // --- INTERACTABILITY & RAYCASTING TOOLTIPS ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function setupRaycaster() {
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(scene.children, true);
+
+                if (intersects.length > 0) {
+                    let obj = intersects[0].object;
+                    while (obj && !obj.userData.title && obj.parent) {
+                        obj = obj.parent;
+                    }
+                    if (obj && obj.userData.title) {
+                        showTooltip(e.clientX, e.clientY, obj.userData.title, obj.userData.desc);
+                        return;
+                    }
+                }
+                hideTooltip();
+            });
+        }
+
+        function showTooltip(x, y, title, desc) {
+            const el = document.getElementById('tooltip');
+            document.getElementById('tooltip-title').children[0].innerText = title;
+            document.getElementById('tooltip-desc').innerText = desc;
+            el.style.left = `${x + 15}px`;
+            el.style.top = `${y + 15}px`;
+            el.classList.remove('hidden');
+            el.classList.remove('opacity-0');
+        }
+
+        function hideTooltip() {
+            const el = document.getElementById('tooltip');
+            el.classList.add('opacity-0');
+        }
+
+        // --- CAMERA FOCUS HOTSPOTS (GSAP Smooth Transitions) ---
+        function focusCamera(targetKey) {
+            let targetPos, lookTarget;
+
+            switch (targetKey) {
+                case 'arduino':
+                    targetPos = { x: -4, y: 5, z: 8 };
+                    lookTarget = { x: -4, y: 0, z: 1 };
+                    break;
+                case 'pool':
+                    targetPos = { x: 5, y: 6, z: 9 };
+                    lookTarget = { x: 5, y: 1.5, z: 3 };
+                    break;
+                case 'panel':
+                    targetPos = { x: 0, y: 6, z: 5 };
+                    lookTarget = { x: 0, y: 2.5, z: -2 };
+                    break;
+                case 'overview':
+                default:
+                    targetPos = { x: 12, y: 14, z: 18 };
+                    lookTarget = { x: 0, y: 2, z: 0 };
+                    break;
+            }
+
+            gsap.to(camera.position, {
+                x: targetPos.x,
+                y: targetPos.y,
+                z: targetPos.z,
+                duration: 1.5,
+                ease: 'power2.inOut'
+            });
+
+            gsap.to(controls.target, {
+                x: lookTarget.x,
+                y: lookTarget.y,
+                z: lookTarget.z,
+                duration: 1.5,
+                ease: 'power2.inOut'
+            });
+        }
+
+        // --- INFRARED / THERMAL VISION MODE ---
+        function toggleThermalVision() {
+            state.thermalMode = !state.thermalMode;
+            const overlay = document.getElementById('thermal-overlay');
+            const btn = document.getElementById('btn-thermal');
+
+            if (state.thermalMode) {
+                overlay.classList.add('thermal-tint-active', 'opacity-100');
+                btn.classList.add('bg-amber-500', 'text-slate-950');
+                scene.background = new THREE.Color(0x1a0000);
+            } else {
+                overlay.classList.remove('thermal-tint-active', 'opacity-100');
+                btn.classList.remove('bg-amber-500', 'text-slate-950');
+                scene.background = new THREE.Color(0x0a0f1d);
+            }
+        }
+
+        // --- IR REMOTE CONTROL COMMAND SIMULATION ---
+        function sendIRCommand(cmd) {
+            // Pulse IR Sensor Mesh visual glow
+            if (irSensorMesh) {
+                gsap.to(irSensorMesh.material.color, { r: 1, g: 0.4, b: 0, duration: 0.1, yoyo: true, repeat: 3 });
+            }
+
+            if (cmd === 'HEAT_ON') {
+                state.pumpActive = true;
+                document.getElementById('toggle-pump').checked = true;
+            } else if (cmd === 'HEAT_OFF') {
+                state.pumpActive = false;
+                document.getElementById('toggle-pump').checked = false;
+            } else if (cmd === 'MODE_AUTO') {
+                state.panelTilt = 30;
+                document.getElementById('slider-panel-tilt').value = 30;
+                if (solarPanelGroup && solarPanelGroup.head) {
+                    solarPanelGroup.head.rotation.x = (30 * Math.PI) / 180;
+                }
+            }
+        }
+
+        // --- EVENT LISTENERS FOR CONTROLS ---
+        function setupEventListeners() {
+            // Sun Angle Slider
+            document.getElementById('slider-sun-angle').addEventListener('input', (e) => {
+                state.sunAngle = parseFloat(e.target.value);
+                document.getElementById('val-sun-angle').innerText = `${state.sunAngle}°`;
+                updateSunPosition();
+            });
+
+            // Sun Intensity Slider
+            document.getElementById('slider-sun-intensity').addEventListener('input', (e) => {
+                state.sunIntensity = parseFloat(e.target.value);
+                document.getElementById('val-sun-intensity').innerText = `${state.sunIntensity} W/m²`;
+                updateSunPosition();
+            });
+
+            // Panel Tilt Slider
+            document.getElementById('slider-panel-tilt').addEventListener('input', (e) => {
+                state.panelTilt = parseFloat(e.target.value);
+                document.getElementById('val-panel-tilt').innerText = `${state.panelTilt}°`;
+                if (solarPanelGroup && solarPanelGroup.head) {
+                    solarPanelGroup.head.rotation.x = (state.panelTilt * Math.PI) / 180;
+                }
+            });
+
+            // Pump Toggle
+            document.getElementById('toggle-pump').addEventListener('change', (e) => {
+                state.pumpActive = e.target.checked;
+            });
+        }
+
+        // --- SIDEBAR TABS & TOGGLE ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+
+        function switchTab(tabId) {
+            ['sim', 't6', 't7', 't8', 't9'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const content = document.getElementById(`tab-content-${t}`);
+                if (t === tabId) {
+                    btn.className = "flex-1 py-2 rounded-lg transition text-blue-400 bg-slate-800 shadow font-bold";
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = "flex-1 py-2 rounded-lg transition text-slate-400 hover:text-slate-200";
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // --- MAIN RENDER LOOP ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            controls.update();
+            updatePhysics();
+            updateSteamParticles();
+
+            // Rotate Solar Panel slightly with tracker mode
+            if (solarPanelGroup) {
+                solarPanelGroup.rotation.y = Math.sin(state.time * 0.2) * 0.05;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- INITIALIZATION ON WINDOW LOAD ---
+        window.onload = function() {
+            init3D();
+            setupEventListeners();
+            initChart();
+
+            // Render KaTeX Math Expressions
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        };
+    </script>
+</body>
+</html>
